@@ -638,9 +638,3 @@ int QueueStack :: pop()
    
 
 
-
-int main(){
-
-
-
-}

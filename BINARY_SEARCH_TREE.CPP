@@ -527,7 +527,7 @@ Node *deleteNode(Node *root, int X)
     else
     {
         root->right = deleteNode(root->right, X);
-        return root;r
+        return root;
     }
 
     return root;

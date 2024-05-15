@@ -1,3 +1,4 @@
+
 #include<iostream>
 using namespace std;
 #include <array>
@@ -480,42 +481,378 @@ void quickSort(int array[],int s,int e){
         return ans;
     }
 
-int main(){
-    /*int n;
-    cout<<"Enter the number: ";
-    cin>>n;*/
-    //int ans=factorial(n);
-    /*int ans=power2(n);
-    cout<<"The power of 2 is: "<<ans<<endl;*/
-    // print(n);
 
-   /* int array[]={1,2,3,4,5,6};
-    cout<<tsum(array,6);*/
+    // 20. Elimination Game
 
-   // string name="aman";
-    //int n=name.size();
-     // reverse(name,0,n-1);
-    //print(name,n);
-    /* bool result=palin(name,0,n-1);
-     if (result)
-     {
-        cout<<"Palindrome";
-     }
-     else{
-        cout<<"Not palindrome";
-     }*/
-  /*   int a,b;
-     cin>>a>>b;
-     cout<<power(a,b);*/
+       int lastRemaining(int n) {
+        if(n==1){
+            return n;
+        }
+        return 2*(1+(n/2) -lastRemaining(n/2));
+    }
 
-     int array[]={2,4,1,0,8,9};
-     int n=6;
-     quickSort(array,0,n-1);
-     for (int i = 0; i < 6; i++)
-     {
-        cout<<array[i]<<" ";
-     }
-     
-  
+
+    // 21. sum of all subsets XOR total
+
+       
     
-}
+  
+   void solve(int arr[], int n,long long int &sum,long long int xorAns,int i){
+       if(i==n){
+           sum=sum+xorAns;
+           return;
+       }
+       
+       
+       // include
+       xorAns=xorAns^arr[i];
+       solve(arr,n,sum,xorAns,i+1);
+       xorAns=xorAns^arr[i];
+       // exclude
+        solve(arr,n,sum,xorAns,i+1);
+   }
+  
+  
+    long long int sumXOR(int arr[], int n)
+    {
+       long long int sum=0;
+       long long int xorAns=0;
+       int i=0;
+       solve(arr,n,sum,xorAns,i);
+       return sum;
+    }
+    
+
+// 22.  GENERATE PARANTHESIS
+void solve(int n,  vector<string>&ans,string temp,int currOpen,int currClose,int remOpen,int remClose){
+        if(currOpen==n && currClose==n){
+            ans.push_back(temp);
+            return;
+        }
+        
+        
+        // openbracket
+        if(remOpen>0){
+            temp.push_back('(');
+            solve(n,ans,temp,currOpen+1,currClose,remOpen-1,remClose);
+            temp.pop_back();
+        }
+        
+        if(remClose>0 && currOpen>currClose){
+             temp.push_back(')');
+            solve(n,ans,temp,currOpen,currClose+1,remOpen,remClose-1);
+            temp.pop_back();
+        }
+    }
+    
+    
+    
+    vector<string> AllParenthesis(int n) 
+    {
+       vector<string>ans;
+       string temp="(";
+       int currOpen=1;
+       int currClose=0;
+       int remOpen=n-1;
+       int remClose=n;
+       solve(n,ans,temp,currOpen,currClose,remOpen,remClose);
+       return ans;
+    }
+
+
+
+// 23. N-QUEEN Problem
+
+ bool isSafe(int row,int col,vector<vector<int>>&board,int n){
+        
+        
+        int x=row;
+        int y=col;
+        
+        while(y>=0){
+            if(board[x][y]==1){
+                return false;
+            }
+            y--;
+        }
+        
+        x=row;
+        y=col;
+        while(x>=0 && y>=0){
+            if(board[x][y]==1){
+                return false;
+            }
+            x--;
+            y--;
+        }
+        
+        x=row;
+        y=col;
+         while(x<n && y>=0){
+            if(board[x][y]==1){
+                return false;
+            }
+            x++;
+            y--;
+        }
+        return true;
+    }
+    
+    
+    void solve(int n, vector<vector<int>>&ans,vector<vector<int>>board,int col){
+        if(col==n){
+           vector<int>temp;
+           for(int col=0;col<n;col++){
+               for(int row=0;row<n;row++){
+                   if(board[row][col]==1){
+                       temp.push_back(row+1);
+                   }
+               }
+           }
+           
+           ans.push_back(temp);
+           return;
+        }
+        
+        
+        for(int row=0;row<n;row++){
+          if(isSafe(row,col,board,n)){
+             board[row][col]=1;
+              solve(n,ans,board,col+1);
+               board[row][col]=0;
+          }
+        }
+    }
+
+    vector<vector<int>> nQueen(int n) {
+       vector<vector<int>>ans;
+       vector<vector<int>>board(n,vector<int>(n,0));
+       int col=0;
+       solve(n,ans,board,col);
+       return ans;
+    }
+
+
+//24. SUDOKO PROBLEM
+
+ bool safe(int row,int col,int k,int grid[N][N]){
+         
+         for(int i=0;i<N;i++){
+             
+             
+             if(grid[i][col]==k){
+                 return false;
+             }
+             
+             if(grid[row][i]==k){
+                 return false;
+             }
+             
+             
+             if(grid[3*(row/3)+(i/3)][3*(col/3)+(i%3)]==k){
+                 return false;
+             }
+         }
+         
+         return true;
+        
+        
+    }
+    bool SolveSudoku(int grid[N][N])  
+    { 
+      for(int row=0;row<N;row++){
+          for(int col=0;col<N;col++){
+              if(grid[row][col]==0){
+                  for(int k=1;k<=9;k++){
+                      if(safe(row,col,k,grid)){
+                          grid[row][col]=k;
+                          bool aageAnswer=SolveSudoku(grid);
+                          if(aageAnswer==true){
+                              return true;
+                          }
+                          else{
+                              grid[row][col]=0;
+                          }
+                      }
+                  }
+                  
+                  return false;
+              }
+          }
+      }
+      
+      return true;
+       
+       
+    }
+    
+    //Function to print grids of the Sudoku.
+    void printGrid (int grid[N][N]) 
+    {
+        // Your code here 
+        for(int i =0; i< N; i++){
+            for(int j = 0; j < N; j++){
+                cout<<grid[i][j]<<" "; 
+            } 
+        }
+    }
+
+
+
+
+// 25. Distribute Repeating Integers
+
+   bool solve(map<int,int>&cnt,vector<int>& quantity,int index){
+    if(index>=quantity.size()){
+        return true;
+    }
+
+    for(auto i=cnt.begin();i!=cnt.end();i++){
+        if(i->second>=quantity[index]){
+         cnt[i->first]=cnt[i->first]-quantity[index];
+        bool ans=solve(cnt,quantity,index+1);
+        if(ans==true){
+            return true;
+        }
+        // backtrack
+       cnt[i->first]=cnt[i->first]+quantity[index];
+
+        }
+       
+    }
+
+    return false;
+
+   }
+
+    bool canDistribute(vector<int>& nums, vector<int>& quantity) {
+        map<int,int>cnt;
+        for(int i=0;i<nums.size();i++){
+            cnt[nums[i]]++;
+        }
+
+        sort(quantity.begin(),quantity.end(),greater<int>());
+        bool ans=solve(cnt,quantity,0);
+        return ans;
+    }
+
+// 26. WORD BREAK II
+ void solve(string s,vector<string>&ans,set<string>&st,int index,string temp){
+        if(index==s.length()){
+            temp.pop_back();
+            ans.push_back(temp);
+            return;
+        }
+
+       string tempString="";
+        for(int i=index;i<s.length();i++){
+           tempString.push_back(s[i]);
+
+           if(st.count(tempString)){
+            solve(s,ans,st,i+1,temp+tempString+" ");
+           }
+        }
+    }
+
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        vector<string>ans;
+        set<string>st;
+        for(auto x:wordDict){
+            st.insert(x);
+        }
+        string temp="";
+        solve(s,ans,st,0,temp);
+        return ans;
+    }
+
+  
+// 27. Find Minimum Time to Finish All Jobs
+ void solve(vector<int>& jobs, int k,int n, vector<int>&work,int ans,int &res,int index){
+        if(index==n){
+           ans=*max_element(work.begin(),work.end());
+           res=min(ans,res);
+           return;
+        }
+
+        if(*max_element(work.begin(),work.end())>=res){
+            return;
+        }
+        for(int i=0;i<k;i++){
+            // optimisation
+            if(i>0 && work[i]==work[i-1]){
+                continue;
+            }
+            work[i]+=jobs[index];
+            solve(jobs,k,n,work,ans,res,index+1);
+             work[i]-=jobs[index];
+        }
+    }
+
+    int minimumTimeRequired(vector<int>& jobs, int k) {
+        sort(jobs.begin(),jobs.end(),greater<int>());
+        int n=jobs.size();
+        if(n==k)
+        return jobs[0];
+         vector<int>work(k,0);
+        int assignmentAns=0;
+        int finalAns=INT_MAX;
+        int i=0;
+        solve(jobs,k,n,work,assignmentAns,finalAns,i);
+        return finalAns;
+    }
+
+
+// 28. Remove Invalid Paranthesis
+ int getCount(string s){
+        stack<char>st;
+        for(int i=0;i<s.size();i++){
+            char ch=s[i];
+
+            if(ch=='('){
+                st.push(ch);
+            }
+            else if(ch==')'){
+                if(!st.empty() && st.top()=='('){
+                    st.pop();
+                }
+                else{
+                    st.push(ch);
+                }
+            }
+        }
+
+
+        return st.size();
+
+    }
+
+
+    void solve(string s,int count,vector<string>&ans,map<string,bool>&mp){
+       if(mp[s]==true)
+       return;
+       else
+       mp[s]=true;
+
+       if(count==0){
+        int newCount=getCount(s);
+        if(newCount==0){
+            ans.push_back(s);
+            return;
+        }
+       }
+
+       for(int i=0;i<s.size();i++){
+        string left=s.substr(0,i);
+        string right=s.substr(i+1);
+        string temp=left+right;
+        solve(temp,count-1,ans,mp);
+       }
+    }
+
+    vector<string> removeInvalidParentheses(string s) {
+         int count=getCount(s);  
+         vector<string>ans;
+         map<string,bool>mp;
+         solve(s,count,ans,mp);
+         return ans;
+    }

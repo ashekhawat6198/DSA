@@ -840,6 +840,7 @@ Node *copyList(Node *head)
 }
 
 // 18. INTERSECTIONS OF TWO LINKED LIST
+
  void insertAtTail(Node* &head,Node* &tail,int d){
         if(head==NULL){
             Node* temp=new Node(d);

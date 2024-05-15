@@ -900,6 +900,7 @@ Node *buildTree(int in[], int pre[], int n)
 
 // 24.  CONSTRUCT TREE FROM INORDER AND POSTORDER
 
+
 int findPosition(int in[], int element, int inorderStart, int inorderEnd)
 {
     for (int i = inorderStart; i <= inorderEnd; i++)

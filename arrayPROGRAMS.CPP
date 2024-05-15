@@ -73,6 +73,7 @@ void reverse(int array[], int n)
 }
 
 void printArray(int array[], int n)
+
 {
     for (int i = 0; i < n; i++)
     {
@@ -401,6 +402,20 @@ int buyStock(int array[], int n)
     return profit;
 }
 
+// OR
+
+ int stockBuyAndSell(int n, vector<int> &prices) {
+      int profit=0;
+      
+      for(int i=1;i<n;i++){
+          if(prices[i]>prices[i-1]){
+             profit+=prices[i-1]-prices[i];
+          }
+      }
+      return profit;
+    }
+
+    
 // 19. MOVES ZEROES TO END      
 
 void ShiftRightZero(int array[], int n)

@@ -409,4 +409,3 @@ int lps(string s)
     return ans[n - 1];
 }
 
-// 17. 
