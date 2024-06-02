@@ -837,8 +837,9 @@ void solve(int n,  vector<string>&ans,string temp,int currOpen,int currClose,int
         int newCount=getCount(s);
         if(newCount==0){
             ans.push_back(s);
-            return;
+           
         }
+         return;
        }
 
        for(int i=0;i<s.size();i++){

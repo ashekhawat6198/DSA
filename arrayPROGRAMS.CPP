@@ -92,7 +92,7 @@ void swapArray(int array[], int n)
         {
             swap(array[i], array[i + 1]); //  temp=array[1];
                                           //   array[1]=array[0];
-        }                                 // arrray[0]=temp;
+        } // arrray[0]=temp;
     }
 }
 
@@ -126,19 +126,20 @@ int duplicatesArray(int array[], int n)
     return ans;
 }
 
-
 //   OR   ( MULTIPLE DUPLICATES )
- vector<int> findDuplicates(vector<int>& nums) {
-       vector<int>temp;
-       sort(nums.begin(),nums.end());
-           for(int i=0;i<nums.size()-1;i++){
-               if(nums[i]==nums[i+1]){
-                   temp.push_back(nums[i]);
-               }
-           }
-       return temp;
-    
+vector<int> findDuplicates(vector<int> &nums)
+{
+    vector<int> temp;
+    sort(nums.begin(), nums.end());
+    for (int i = 0; i < nums.size() - 1; i++)
+    {
+        if (nums[i] == nums[i + 1])
+        {
+            temp.push_back(nums[i]);
+        }
     }
+    return temp;
+}
 // 8. INTERSECTION OF TWO ARRAYS ( https://www.codingninjas.com/codestudio/problems/intersection-of-2-arrays_1082149?source=youtube&campaign=love_babbar_codestudio1&utm_source=youtube&utm_medium=affiliate&utm_campaign=love_babbar_codestudio1 )
 int intersection(int array1[], int array2[], int n, int m)
 {
@@ -180,24 +181,52 @@ bool isSorted(int array[], int n)
 
 // 10 . Pair sum  ( https://www.codingninjas.com/codestudio/problems/pair-sum_697295?source=youtube&campaign=love_babbar_codestudio1&utm_source=youtube&utm_medium=affiliate&utm_campaign=love_babbar_codestudio1 )
 
-/* int pairSum(int array[],int n,int s){
-     vector< vector<int> > ans;
-     for (int i = 0; i < n; i++)
-     {
-         for(int j=i+1;j<n;j++){
-             if(array[i]+array[j]==s){
-                 vector <int> temp;
-                 temp.push_back(min(array[i],array[j]));
-                 temp.push_back(max(array[i],array[j]));
-                 ans.push_back(temp);
+// BRUTE FORCE
 
-             }
-         }
-     }
-     sort(ans.begin(),ans.end());
-     return ans;
+int pairSum(int array[], int n, int s)
+{
+    vector<vector<int>> ans;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (array[i] + array[j] == s)
+            {
+                vector<int> temp;
+                temp.push_back(min(array[i], array[j]));
+                temp.push_back(max(array[i], array[j]));
+                ans.push_back(temp);
+            }
+        }
+    }
+    sort(ans.begin(), ans.end());
+    return ans;
+}
 
- }*/
+// BETTER
+
+vector<int> twoSum(vector<int> &nums, int target)
+{
+    vector<int> ans;
+    map<int, int> mp;
+    int more = 0;
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        more = target - nums[i];
+        if (mp.find(more) != mp.end())
+        {
+            ans.push_back(i);
+            ans.push_back(mp[more]);
+        }
+        else
+        {
+            mp[nums[i]] = i;
+        }
+    }
+
+    return ans;
+}
 
 // 11. SORT 0,1  ( https://www.codingninjas.com/codestudio/problems/sort-0-1-2_631055?source=youtube&campaign=LoveBabbar_Codestudiovideo1&utm_source=youtube&utm_medium=affiliate&utm_campaign=LoveBabbar_Codestudiovideo1 )
 
@@ -329,6 +358,23 @@ int SecondSmallest(int array[], int n)
 
 // 16. MAJORITY ELEMENT (OCCURENCE > SIZE/2)
 
+   // BRUTE FORCE
+    int majorityElement(vector<int>& nums) {
+        int n=nums.size();
+        for(int i=0;i<n;i++){
+            int count=0;
+            for(int j=0;j<n;j++){
+                if(nums[i]==nums[j]){
+                    count++;
+                }
+            }
+            if(count>n/2) return nums[i];
+        }
+        return -1;
+    }
+
+    // OPTIMAL APPROACH
+
 int majorityE(int array[], int n)
 {
     int count = 0;
@@ -404,19 +450,21 @@ int buyStock(int array[], int n)
 
 // OR
 
- int stockBuyAndSell(int n, vector<int> &prices) {
-      int profit=0;
-      
-      for(int i=1;i<n;i++){
-          if(prices[i]>prices[i-1]){
-             profit+=prices[i-1]-prices[i];
-          }
-      }
-      return profit;
-    }
+int stockBuyAndSell(int n, vector<int> &prices)
+{
+    int profit = 0;
 
-    
-// 19. MOVES ZEROES TO END      
+    for (int i = 1; i < n; i++)
+    {
+        if (prices[i] > prices[i - 1])
+        {
+            profit += prices[i - 1] - prices[i];
+        }
+    }
+    return profit;
+}
+
+// 19. MOVES ZEROES TO END
 
 void ShiftRightZero(int array[], int n)
 {
@@ -432,6 +480,45 @@ void ShiftRightZero(int array[], int n)
 }
 
 // 20.    SORT 0 1 2
+
+// BRUTE FORCE
+
+void sortColors(vector<int> &nums)
+{
+    int count1 = 0;
+    int count2 = 0;
+    int count3 = 0;
+    for (int i = 0; i < nums.size(); i++)
+    {
+        if (nums[i] == 0)
+        {
+            count1++;
+        }
+        else if (nums[i] == 1)
+        {
+            count2++;
+        }
+        else
+        {
+            count3++;
+        }
+    }
+
+    for (int i = 0; i < count1; i++)
+    {
+        nums[i] = 0;
+    }
+    for (int i = count1; i < count1 + count2; i++)
+    {
+        nums[i] = 1;
+    }
+    for (int i = count1 + count2; i < nums.size(); i++)
+    {
+        nums[i] = 2;
+    }
+}
+
+// OPTIMAL APPROACH
 
 int sort_0_1_2(int array[], int n)
 {
@@ -614,7 +701,6 @@ void merge(vector<int> &nums1, int m, vector<int> &nums2, int n)
         k--;
         j--;
     }
-    
 }
 
 // 27. CHECK IS ARRAY IS SORTED AND ROTATED
@@ -848,7 +934,7 @@ int maximumProduct(vector<int> &arr, int n)
 
 // 35. MINIMUM NUMBER OF MERGE OPERATIONS TO MAKE AN ARRAY PALINDROME
 
-int palindrome(vector<int> A)         // DO IT AGAIN 
+int palindrome(vector<int> A) // DO IT AGAIN
 {
     int ans = 0;
     int i = 0;
@@ -907,241 +993,583 @@ string largestNumber(vector<int> &nums)
 }
 // 37. FIND MEDIAN IN ARRAY
 int find_median(vector<int> v)
-		{
-		    sort(v.begin(),v.end());
-		    int n=v.size();
-		     int t=n/2;
-		    if(n%2==0){
-		        return (v[t]+v[t-1])/2;
-		    }
-		    else
-		    {
-		        return v[t];
-		    }
-		}
+{
+    sort(v.begin(), v.end());
+    int n = v.size();
+    int t = n / 2;
+    if (n % 2 == 0)
+    {
+        return (v[t] + v[t - 1]) / 2;
+    }
+    else
+    {
+        return v[t];
+    }
+}
 
 // 38. FIND MEDIAN OF TWO SORTED ARRAYS
-double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-        int m=nums1.size();
-        int n=nums2.size();
+double findMedianSortedArrays(vector<int> &nums1, vector<int> &nums2)
+{
+    int m = nums1.size();
+    int n = nums2.size();
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    vector<int> nums3(m + n);
+    while (i < m && j < n)
+    {
+        if (nums1[i] < nums2[j])
+        {
+            nums3[k] = nums1[i];
+            k++;
+            i++;
+        }
+        else
+        {
+            nums3[k] = nums2[j];
+            k++;
+            j++;
+        }
+    }
+
+    while (i < m)
+    {
+        nums3[k] = nums1[i];
+        k++;
+        i++;
+    }
+    while (j < n)
+    {
+        nums3[k] = nums2[j];
+        k++;
+        j++;
+    }
+
+    int t = nums3.size();
+    int x = t / 2;
+    double ans = 0;
+
+    if (t % 2 == 0)
+    {
+        ans = (nums3[x] + nums3[x - 1]) / 2.0;
+        return ans;
+    }
+    else
+    {
+        ans = nums3[x];
+        return ans;
+    }
+}
+
+// 38. MINIMIZE THE HEIGHTS
+
+int getMinDiff(int arr[], int n, int k)
+{
+
+    sort(arr, arr + n);
+
+    int diff = arr[n - 1] - arr[0];
+
+    int maxi;
+    int mini;
+
+    for (int i = 1; i < n; i++)
+    {
+
+        if (arr[i] - k < 0)
+            continue;
+
+        maxi = max(arr[i - 1] + k, arr[n - 1] - k);
+        mini = min(arr[0] + k, arr[i] - k);
+
+        diff = min(diff, maxi - mini);
+    }
+    return diff;
+}
+
+// 39. REMOVE DUPLICATES FROM SORTED ARRAY
+
+int removeDuplicates(vector<int> &nums)
+{
+    int j = 1;
+    for (int i = 1; i < nums.size(); i++)
+    {
+        if (nums[i] != nums[i - 1])
+        {
+            nums[j] = nums[i];
+            j++;
+        }
+    }
+
+    return j;
+}
+
+// 40. MAX CONSECUTIVE ONES
+
+int findMaxConsecutiveOnes(vector<int> &nums)
+{
+
+    int count = 0;
+    int maxi = 0;
+    for (int i = 0; i < nums.size(); i++)
+    {
+        if (nums[i] == 1)
+        {
+            count++;
+            maxi = max(maxi, count);
+        }
+        else
+        {
+            count = 0;
+        }
+    }
+
+    return maxi;
+}
+
+// 41. LONGEST SUBARRAY WITH SUM K
+
+// BRUTE FORCE APPROACH
+
+int lenOfLongSubarr(int A[], int N, int K)
+{
+    int len = 0;
+    for (int i = 0; i < N; i++)
+    {
+        int sum = 0;
+        for (int j = i; j < N; j++)
+        {
+            sum += A[j];
+            if (sum == K)
+            {
+                len = max(len, j - i + 1);
+            }
+        }
+    }
+    return len;
+}
+
+// OPTIMAL APPROACH
+
+int lenOfLongSubarr(int A[], int n, int K)
+{
+    map<int, int> mp;
+    int len = 0;
+    int sum = 0;
+    mp[0] = -1;
+    for (int i = 0; i < n; i++)
+    {
+        sum += A[i];
+        if (mp.find(sum - K) != mp.end())
+        {
+            len = max(len, i - mp[sum - K]);
+        }
+        if (mp.find(sum) == mp.end())
+        {
+            mp[sum] = i;
+        }
+    }
+
+    return len;
+}
+
+// 42. UNION OF TWO SORTED ARRAYS
+
+// BRUTE FORCE APPROACH :- take set and push elements of first array and then second array in set and then create a new array and put the elements of set in it
+
+vector<int> findUnion(int arr1[], int arr2[], int n, int m)
+{
+
+    set<int> st;
+
+    for (int i = 0; i < n; i++)
+    {
+        st.insert(arr1[i]);
+    }
+
+    for (int i = 0; i < m; i++)
+    {
+        st.insert(arr2[i]);
+    }
+
+    vector<int> ans(st.size());
+    int i = 0;
+    for (auto x : st)
+    {
+        ans[i++] = x;
+    }
+
+    return ans;
+}
+
+// OPTIMAL APPROACH
+
+vector<int> findUnion(int arr1[], int arr2[], int n, int m)
+{
+    vector<int> ans;
+    int i = 0;
+    int j = 0;
+    while (i < n && j < m)
+    {
+        if (arr1[i] <= arr2[j])
+        {
+            if (ans.size() == 0 || ans.back() != arr1[i])
+            {
+                ans.push_back(arr1[i]);
+            }
+            i++;
+        }
+        else
+        {
+            if (ans.size() == 0 || ans.back() != arr2[j])
+            {
+                ans.push_back(arr2[j]);
+            }
+            j++;
+        }
+    }
+
+    while (i < n)
+    {
+        if (ans.size() == 0 || ans.back() != arr1[i])
+        {
+            ans.push_back(arr1[i]);
+        }
+        i++;
+    }
+
+    while (j < m)
+    {
+        if (ans.size() == 0 || ans.back() != arr2[j])
+        {
+            ans.push_back(arr2[j]);
+        }
+        j++;
+    }
+
+    return ans;
+}
+
+// 43.COUNT INVERSION
+    
+    // BRUTE FORCE
+
+     long long int inversionCount(long long arr[], long long N)
+    {
+       long long int cnt=0;
+       for(int i=0;i<N-1;i++){
+           for(int j=i+1;j<N;j++){
+              if(arr[i]>arr[j]){
+                  cnt++;
+              } 
+           }
+       }
+       return cnt;
+    }
+
+
+
+    // OPTIMAL 
+    long long int cnt=0;
+       long long int merge(long long arr[],int s,int e){
+        int mid=s+(e-s)/2;
+        int len1=mid-s+1;
+        int len2=e-mid;
+        long long int *left=new long long int[len1];
+        long long int *right=new long long int[len2];
+        long long int cnt=0;
+        int mainindexarray=s;
+        for(int i=0;i<len1;i++){
+            left[i]=arr[mainindexarray++];
+        }
+        
+        mainindexarray=mid+1;
+        for(int i=0;i<len2;i++){
+           right[i]=arr[mainindexarray++];
+        }
+        
         int i=0;
         int j=0;
-        int k=0;
-        vector<int>nums3(m+n);
-        while(i<m && j<n){
-            if(nums1[i]<nums2[j]){
-             nums3[k]=nums1[i]; 
-               k++;
-               i++;
+        mainindexarray=s;
+        
+        while(i<len1 && j<len2){
+            if(left[i]<=right[j]){
+                arr[mainindexarray]=left[i];
+                mainindexarray++;
+                i++;
+                
             }
             else{
-                nums3[k]=nums2[j];
-                k++;
+                arr[mainindexarray]=right[j];
+                cnt+=len1-i;
+                mainindexarray++;
                 j++;
             }
         }
         
-        while(i<m){
-            nums3[k]=nums1[i];
-            k++;
-            i++;
-        }
-        while(j<n){
-            nums3[k]=nums2[j];
-            k++;
-            j++;
+        while(i<len1){
+            arr[mainindexarray++]=left[i++];
         }
         
-        int t=nums3.size();
-    int  x=t/2;
-    double ans=0;
+        while(j<len2){
+            arr[mainindexarray++]=right[j++];
+        }
         
-        if(t%2==0){
-             ans=(nums3[x]+nums3[x-1])/2.0;
-            return ans;
-        }
-        else{
-            ans=nums3[x];
-            return ans;
-        }
-    
+        
+        delete []left;
+        delete []right;
+        return cnt;
     }
     
-    // 38. MINIMIZE THE HEIGHTS 
-
-    int getMinDiff(int arr[], int n, int k) {
-        
-      sort(arr,arr+n);
-        
-        int diff=arr[n-1]-arr[0];
-        
-        int maxi;
-        int mini;
-        
-        for(int i=1;i<n;i++){
-            
-            if(arr[i]-k<0) continue;
-            
-            maxi=max(arr[i-1]+k,arr[n-1]-k);
-            mini=min(arr[0]+k,arr[i]-k);
-            
-            diff=min(diff,maxi-mini);
+   long long int  sort(long long arr[],int s,int e){
+         long long int cnt=0;
+        if(s>=e){
+            return cnt;
         }
-        return diff;
+        
+        int mid=s+(e-s)/2;
+        cnt+=sort(arr,s,mid);
+        cnt+=sort(arr,mid+1,e);
+        
+        cnt+=merge(arr,s,e);
+        return cnt;
     }
-
-int main()
-{
-    /*  1. max and min program
-      int frnds[5];
-      int n=5;
-      cout<<"Give the elements of the array: "<<endl;
-      for (int i = 0; i < n; i++)
-      {
-          // taking array elements from the user
-          cout<<"Enter the "<<  i <<" element: "<<endl;
-          cin>>frnds[i];
-      }
-
-      cout<<"The maximum element is: "<<getMax(frnds,n)<<endl;
-      cout<<"The minimum element is: "<<getMin(frnds,n);*/
-
-    /*  sum of array
-    int n;
-    cout<<"Enter the size of the array: ";
-    cin>>n;
-    int marks[5];
-    cout<<"Enter the elements of the array: "<<endl;
-    for (int i = 0; i < n; i++)
+    
+    long long int inversionCount(long long arr[], long long N)
     {
-        cin>>marks[i];
+        
+       return sort(arr,0,N-1);
+       
     }
-    sum(marks,n);
-    cout<<"The sum of the matrix is: "<<sum(marks,n);*/
 
-    /* LINEAR SEARCH
-     int array[8]={1,5,8,-7,6,22,45,78};
-     int n=8;
-     int key;
-     cout<<"Enter the key: ";
-     cin>>key;
-     bool milgya=found(array,n,key);
-     if(milgya){
-         cout<<"The given number is present in the array";
+
+// 44. REVERSE PAIRS
+
+void merge(vector<int>&nums,int s,int e){
+     int mid=s+(e-s)/2;
+     int len1=mid-s+1;
+     int len2=e-mid;
+     int* left=new int[len1];
+     int *right=new int[len2];
+
+      int mainindexarray=s;
+     for(int i=0;i<len1;i++){
+              left[i]=nums[mainindexarray++];
      }
-     else{
-         cout<<"The number is not present in the array";
-     }*/
 
-    /*   REVERSE THE ARRAY
-      int array[6]={1,2,3,4,5,6};
-      int array2[5]={10,11,12,13,14};
+     mainindexarray=mid+1;
+     for(int i=0;i<len2;i++){
+         right[i]=nums[mainindexarray++];
+     }
 
-       reverse(array,6);
-       reverse(array2,5);
-
-       printArray(array,6);
-       printArray(array2,5);*/
-
-    /*   SWAP ALTERNATE
-      int odd[7]={4,5,6,7,8,9,1};
-      int even[8]={11,14,8,9,7,56,0,69};
-
-
-      swapArray(even,8);
-      swapArray(odd,7);
-      printArray(odd,7);
-      printArray(even,8);*/
-
-    /* FIND QNIQUE
-      int array[7]={1,2,1,4,8,2,8};
-     int result= uniqueDigit(array,7);
-      cout<<result<<endl;*/
-
-    /*   DUPLICATES IN ARRAY
-         int array[6]={5,1,2,3,4,2};
-
-         int result=duplicatesArray(array,6);
-         cout<<result;*/
-
-    /* INTERSECTION OF TWO arrays
-         int array1[3]={1,4,5};
-         int array2[3]={3,4,5};
-         intersection(array1,array2,3,3);*/
-
-    /* Sorted arrays
-         int array[5]={1,2,3,4,5};
-         bool result=isSorted(array,5);
-         if(result){
-            cout<<"Array is sorted";
+     int i=0;
+     int j=0;
+     mainindexarray=s;
+     while(i<len1 && j<len2){
+         if(left[i]<right[j]){
+             nums[mainindexarray++]=left[i++];
          }
          else{
-            cout<<"Array is not sorted";
-         }*/
+             nums[mainindexarray++]=right[j++];
+         }
+     }
 
-    /*  SORT 0 1
-      int array[8]={1,1,1,1,0,0,0,0};
-      SortOne(array,8);
-      printArray(array,8);*/
+     while(i<len1){
+         nums[mainindexarray++]=left[i++];
+     }
 
-    /*   LEFT ROTATE AN ARRAY BY ONE PLACE
-       int array[6]={88,98,45,68,78,55};
-        Rotate(array,6);
-        printArray(array,6);*/
+     while(j<len2){
+          nums[mainindexarray++]=right[j++];
+     }
+       
+       delete []left;
+       delete []right;
 
-    /*    LEFT ROTATE AN ARRAY BY K PLACE
-        int array[5] = {11, 12, 13, 14, 15};
-        int k = 3;
-        lRotate(array, 5, k);*/
-
-    /*   MISSING NUMEBR
-      int array[5]={0,1,3,2,5};
-
-      cout<<"The missing number is: "<< missingN(array)<<endl;*/
-
-    /* SECOND LARGEST AND SECOND SMALLEST ELEMENT
-        int n;
-        cout<<"Enter the size of the array: ";
-        cin>>n;
-        int array[n];
-        cout<<"Enter the elements of the array: ";
-        for (int i = 0; i < n; i++)
-        {
-            cin>>array[i];
-        }
-        cout<<"Second largest value is: "<<SecondLargest(array,n)<<endl;
-        cout<<"Second smallest value is: "<<SecondSmallest(array,n);*/
-
-    /*  MAJORITY ELEEMNT
- int array[13]={1,1,1,2,2,1,2,2,2,1,1,2,1};
-
- cout<<"Majority element is: " << majorityE(array,13);*/
-
-    /* KADANES ALGORITHM
-      int array[9]={-2,1,-3,4,-1,2,1,-5,4};
-
-      cout<<"Maximum sum is: "<<  MaxSub(array,9);*/
-
-    /*  BUY AND SELL STOCK
-        int array[6]={7,1,5,3,6,4};
-        cout<<"Maximum profit is: "<<buyStock(array,6);*/
-
-    /* SHIFT RIGHT ZERO
-      int array[6] = {1, 0, 2, 0, 0, 45};
-      ShiftRightZero(array, 6);*/
-
-    vector<int> array = {
-        2,
-        1,
-        5,
-        4,
-        3,
-        0,
-        0,
-    };
-    vector<int> result = nextPermutation(array);
-    for (int i : result)
-    {
-        cout << i << " ";
     }
+
+    int countPairs(vector<int>& nums,int low,int high,int mid){
+        int right=mid+1;
+        int cnt=0;
+        for(int i=low;i<=mid;i++){
+            while(right<=high && nums[i]>2*(long long)nums[right]){
+               right++;
+            } 
+              cnt+=(right-(mid+1));  
+        }
+
+        return cnt;
+
+    }
+    int sort(vector<int>& nums,int s,int e){
+        int cnt=0;
+        if(s>=e){
+            return cnt;
+        }
+
+        int mid=s+(e-s)/2;
+        cnt+=sort(nums,s,mid);
+        cnt+=sort(nums,mid+1,e);
+        cnt+=countPairs(nums,s,e,mid);
+        merge(nums,s,e);
+        return cnt;
+
+    }
+
+    int reversePairs(vector<int>& nums) {
+       return sort(nums,0,nums.size()-1); 
+    }
+
+// 45. 4 SUM
+vector<vector<int>> fourSum(vector<int>& nums, int target) {
+          int n=nums.size();
+          sort(nums.begin(),nums.end());
+          set<vector<int>>st;
+          for(int i=0;i<n-3;i++){
+            for(int j=i+1;j<n-2;j++){
+                int k=j+1;
+                int l=n-1;
+                while(k<l){
+                    long long sum=(long long)nums[i]+nums[j]+nums[k]+nums[l];
+                    if(sum==target){
+                      st.insert({nums[i],nums[j],nums[k],nums[l]});
+                      k++;
+                      l--;
+
+                    }
+                    else if(sum<target){
+                     k++;
+                    }
+                    else{
+                        l--;
+                    }
+                }
+            }
+          }
+
+           vector<vector<int>>ans(st.begin(),st.end());
+           return ans;
+    }
+
+// 46. Find the repeating and missing number
+
+// BRUTE FORCE
+ vector<int> findTwoElement(vector<int> arr, int n) {
+        int missing=-1;
+        int repeating=-1;
+        vector<int>ans;
+        for(int i=1;i<=n;i++){
+            int count=0;
+            for(int j=0;j<n;j++){
+                if(arr[j]==i){
+                    count++;
+                }
+            }
+            
+            if(count==2) repeating=i;
+            else if(count==0) missing=i;
+            if(repeating !=-1 && missing!=-1) break;
+        }
+        
+        ans.push_back(repeating);
+        ans.push_back(missing);
+        return ans;
+    }
+
+
+// OPTIMAL APPROACH                                     
+
+
+    vector<int> findTwoElement(vector<int> arr, int n) {
+        
+    vector<int> result(2);
+    int repeating = -1;
+    int missing = -1;
+    
+    for (int i = 0; i < n; ++i) {
+        if (arr[abs(arr[i]) - 1] > 0) {                        // -1 because it is zero based indexing
+            arr[abs(arr[i]) - 1] = -arr[abs(arr[i]) - 1];
+        } else {
+            repeating = abs(arr[i]);
+        }
+    }
+    
+    for (int i = 0; i < n; ++i) {
+        if (arr[i] > 0) {
+            missing = i + 1;
+            break;
+        }
+    }
+    
+    result[0] = repeating;
+    result[1] = missing;
+    
+    return result;
+    
 }
+
+
+// 47. MAJORITY ELEMENT ( N/3 TIMES )
+
+    // BETTER APPORACH
+
+ vector<int> majorityElement(vector<int>& nums) {         // TIME :- O(n)   && SPACE :- O(n)
+        vector<int>ls;
+        map<int,int>mp;
+        int n=nums.size();
+        int mini=(n/3)+1;
+        for(int i=0;i<n;i++){
+             mp[nums[i]]++;
+             if(mp[nums[i]]==mini){
+                ls.push_back(nums[i]);
+             }
+
+             if(ls.size()==2) break;
+        }
+
+        return ls;
+}
+
+// OPTIMAL APPROACH
+
+ vector<int> majorityElement(vector<int>& nums) {              // TIME :- O(n)   && SPACE :- O(1)
+       int cnt1=0;
+       int element1=0;
+       int cnt2=0;
+       int element2=0;
+       int n=nums.size();
+       for(int i=0;i<n;i++){
+           if(cnt1==0 && element2!=nums[i]){
+            cnt1=1;
+            element1=nums[i];
+           }   
+           else if(cnt2==0 && element1!=nums[i]){
+             cnt2=1;
+            element2=nums[i];
+           }
+           else if(element1==nums[i]){
+            cnt1++;
+           }
+           else if(element2==nums[i]){
+            cnt2++;
+           }
+           else {
+            cnt1--;
+            cnt2--;
+           }
+       } 
+
+         vector<int>ls;
+         cnt1=0,cnt2=0;
+       for(int i=0;i<n;i++){
+          if(element1==nums[i]) cnt1++;
+          else if(element2==nums[i]) cnt2++;
+       }
+
+       int mini=(n/3)+1;
+        if(cnt1>=mini) ls.push_back(element1);
+        if(cnt2>=mini) ls.push_back(element2);
+        return ls;
+    }
+
+
+
