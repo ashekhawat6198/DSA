@@ -16,11 +16,8 @@ class Node{
 
 
 void insertAtHead(Node* &head,Node* &tail,int d){
-    if(head==NULL){
-        Node* temp=new Node(d);
-        head=temp;
-        tail=temp;
-    }
+   
+   
     Node *temp=new Node(d);
     temp->next=head;
     head->prev=temp;

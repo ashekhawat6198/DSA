@@ -900,7 +900,6 @@ Node *buildTree(int in[], int pre[], int n)
 
 // 24.  CONSTRUCT TREE FROM INORDER AND POSTORDER
 
-
 int findPosition(int in[], int element, int inorderStart, int inorderEnd)
 {
     for (int i = inorderStart; i <= inorderEnd; i++)
@@ -1082,4 +1081,338 @@ bool isIsomorphic(Node *r1, Node *r2)
     }
 }
 
-   
+// 30. ITERATIVE INORDER TRAVERSAL
+vector<int> inorderTraversal(TreeNode *root)
+{
+    vector<int> ans;
+    stack<TreeNode *> st;
+    TreeNode *node = root;
+    while (true)
+    {
+        if (node != NULL)
+        {
+            st.push(node);
+            node = node->left;
+        }
+        else
+        {
+            if (st.empty())
+                break;
+            node = st.top();
+            st.pop();
+            ans.push_back(node->val);
+            node = node->right;
+        }
+    }
+
+    return ans;
+}
+
+// 31. ITERATIVE PREORDER TRAVERSAL
+vector<int> preorderTraversal(TreeNode *root)
+{
+    vector<int> ans;
+    if (root == NULL)
+        return ans;
+    stack<TreeNode *> q;
+    q.push(root);
+    while (!q.empty())
+    {
+        TreeNode *temp = q.top();
+        q.pop();
+        ans.push_back(temp->val);
+        if (temp->right)
+        {
+            q.push(temp->right);
+        }
+        if (temp->left)
+        {
+            q.push(temp->left);
+        }
+    }
+
+    return ans;
+}
+
+// 32.  ITERATIVE POSTORDER TRAVERSAL USING 2 STACK
+vector<int> postorderTraversal(TreeNode *root)
+{
+    vector<int> ans;
+    if (root == NULL)
+        return ans;
+    stack<TreeNode *> st1, st2;
+    st1.push(root);
+    while (!st1.empty())
+    {
+        root = st1.top();
+        st1.pop();
+        st2.push(root);
+        if (root->left)
+        {
+            st1.push(root->left);
+        }
+        if (root->right)
+        {
+            st1.push(root->right);
+        }
+    }
+
+    while (!st2.empty())
+    {
+        ans.push_back(st2.top()->val);
+        st2.pop();
+    }
+    return ans;
+}
+
+// 33.  ITERATIVE POSTORDER TRAVERSAL USING 1 STACK
+
+vector<int> postorderTraversal(TreeNode *root)
+{
+    vector<int> ans;
+    if (root == NULL)
+        return ans;
+    stack<TreeNode *> st;
+    TreeNode *temp = NULL;
+    TreeNode *curr = root;
+    while (curr != NULL || !st.empty())
+    {
+        if (curr != NULL)
+        {
+            st.push(curr);
+            curr = curr->left;
+        }
+        else
+        {
+            temp = st.top()->right;
+            if (temp == NULL)
+            {
+                temp = st.top();
+                st.pop();
+                ans.push_back(temp->val);
+                while (!st.empty() && temp == st.top()->right)
+                {
+                    temp = st.top();
+                    st.pop();
+                    ans.push_back(temp->val);
+                }
+            }
+            else
+                curr = temp;
+        }
+    }
+    return ans;
+}
+
+// 34. CHECK IF GIVEN GRAPH IS TREE OR NOT
+bool isCyclic(unordered_map<int, list<int>> &adj, vector<bool> &visited, int node, int parent)
+{
+    visited[node] = true;
+    for (auto neighbour : adj[node])
+    {
+        if (!visited[neighbour])
+        {
+            bool ans = isCyclic(adj, visited, neighbour, node);
+            if (ans)
+                return true;
+        }
+        else if (visited[neighbour] && neighbour != parent)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int isTree(int n, int m, vector<vector<int>> &edg)
+{
+    unordered_map<int, list<int>> adj;
+    for (int i = 0; i < m; i++)
+    {
+        int u = edg[i][0];
+        int v = edg[i][1];
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    vector<bool> visited(n, false);
+    if (isCyclic(adj, visited, 0, -1))
+        return 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (visited[i] == false)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// 35. Duplicate subtree in Binary Tree of size 2 or more
+
+string solve(Node *root, unordered_map<string, int> &mp)
+{
+    // base case
+    if (!root)
+    {
+        return "$";
+    }
+
+    // if there is a leaf node
+    if (!root->left && !root->right)
+    {
+        string s = to_string(root->data);
+        return s;
+    }
+
+    // if there is no leaf node present
+    string s = to_string(root->data);
+    s += "," + solve(root->left, mp); // commas: for this test case we are using commas 4->1->13  && 4->11->3
+    s += "," + solve(root->right, mp);
+    mp[s]++;
+    return s;
+}
+
+int dupSub(Node *root)
+{
+    unordered_map<string, int> mp;
+    solve(root, mp);
+    for (auto x : mp)
+    {
+        if (x.second >= 2)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// 36. FIND ALL DUPLICATES SUBTREE IN IN BINARY TREE
+string solve(TreeNode *root, vector<TreeNode *> &ans, unordered_map<string, int> &mp)
+{
+
+    if (root == NULL)
+        return "$";
+
+    string s = "";
+    s = to_string(root->val);
+    s = s + "," + solve(root->left, ans, mp);
+    s = s + "," + solve(root->right, ans, mp);
+    if (mp[s] == 1)
+        ans.push_back(root);
+    mp[s]++;
+    return s;
+}
+
+vector<TreeNode *> findDuplicateSubtrees(TreeNode *root)
+{
+    vector<TreeNode *> ans;
+    unordered_map<string, int> mp;
+    solve(root, ans, mp);
+    return ans;
+}
+
+// 37. Check if all leaves are at same level
+
+void solve(Node *root, int &ans, int h, int &ma)
+{
+
+    if (root == NULL)
+        return;
+    if (ans == 0)
+        return;
+    if (root->left == NULL && root->right == NULL)
+    {
+        if (ma == -1)
+        {
+            ma = h;
+        }
+        else if (h != ma)
+        {
+            ans = 0;
+        }
+    }
+
+    solve(root->left, ans, h + 1, ma);
+    solve(root->right, ans, h + 1, ma);
+}
+
+bool check(Node *root)
+{
+    int ans = 1;
+    int h = 0;
+    int ma = -1;
+    solve(root, ans, h, ma);
+    return ans;
+}
+
+// 38. FIND DISTANCE BETWEEN 2 NODES IN BINARY TREE
+Node* findLCA(Node* root,int a,int b){
+        if(root==NULL) return NULL;
+        if(root->data==a || root->data==b){
+            return root;
+        }
+        
+        Node* l=findLCA(root->left,a,b);
+        Node* r=findLCA(root->right,a,b);
+        if(l==NULL && r!=NULL){
+            return r;
+        }
+        else if(l!=NULL && r==NULL){
+            return l;
+        }
+        else if(l!=NULL && r!=NULL){
+            return root;
+        }
+        
+            return NULL;
+        
+    }
+    
+    int solve(Node* root,int x){
+        if(root==NULL) return 0;
+        if(root->data==x) return 1;
+        int l=solve(root->left,x);
+        int r=solve(root->right,x);
+        if(!l && !r) return 0;
+        else{
+            return l+r+1;
+        }
+    }
+    
+    int findDist(Node* root, int a, int b) {
+            Node *LCA=findLCA(root,a,b);
+            int x=solve(LCA,a);
+            int y=solve(LCA,b);
+            return x+y-2;
+    }
+
+ // 39. REVERSE LEVEL ORDER TREVERSAL
+ vector<int> reverseLevelOrder(Node *root)
+{
+    vector<int>ans;
+    queue<Node*>q;
+    q.push(root);
+    stack<Node*>st;
+    while(!q.empty()){
+        Node* temp=q.front();
+        q.pop();
+        st.push(temp);
+        if(temp->right){
+            q.push(temp->right);
+        }
+        if(temp->left){
+            q.push(temp->left);
+        }
+    }
+    
+    
+    while(!st.empty()){
+        ans.push_back(st.top()->data);
+        st.pop();
+        
+    }
+    return ans;
+}

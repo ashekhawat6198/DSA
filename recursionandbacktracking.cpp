@@ -731,7 +731,7 @@ void solve(int n,  vector<string>&ans,string temp,int currOpen,int currClose,int
             cnt[nums[i]]++;
         }
 
-        sort(quantity.begin(),quantity.end(),greater<int>());
+        sort(quantity.begin(),quantity.end(),greater<int>());  // always give priority to big number eg: {1,1,1,1,1,2,2}  [5,2]
         bool ans=solve(cnt,quantity,0);
         return ans;
     }
@@ -774,6 +774,7 @@ void solve(int n,  vector<string>&ans,string temp,int currOpen,int currClose,int
            return;
         }
 
+           // not necessary
         if(*max_element(work.begin(),work.end())>=res){
             return;
         }
@@ -857,3 +858,191 @@ void solve(int n,  vector<string>&ans,string temp,int currOpen,int currClose,int
          solve(s,count,ans,mp);
          return ans;
     }
+
+
+  // 28. Combination Sum
+
+   void solve(vector<int>& nums, int target,vector<vector<int>>&result,vector<int>&ans,int i){
+      if(i==nums.size()){
+        if(target==0){
+            result.push_back(ans);
+        }
+        return;
+      }
+
+
+        if(nums[i]<=target){
+            ans.push_back(nums[i]);
+            solve(nums,target-nums[i],result,ans,i);
+            ans.pop_back();
+        }
+
+          solve(nums,target,result,ans,i+1);
+    }
+
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>>result;
+        vector<int>ans;
+        solve(candidates,target,result,ans,0);
+        return result;
+    }
+
+// 29. Combination Sum II
+
+ void solve(vector<int>& nums, int target,vector<vector<int>>&result,vector<int>&ans,int index){
+      
+        if(target==0){
+            result.push_back(ans);
+            return;
+        }
+        
+
+
+        for(int i=index;i<nums.size();i++){
+            if(nums[i]>target) break;
+            if(i>index && nums[i]==nums[i-1]) continue;
+            
+            ans.push_back(nums[i]);
+            solve(nums,target-nums[i],result,ans,i+1);
+            ans.pop_back();
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        sort(candidates.begin(),candidates.end());
+        vector<vector<int>> result;
+        vector<int>ans;
+        solve(candidates,target,result,ans,0);
+        return result;
+    }
+
+// 30. SUBSET SUM
+ void solve(vector<int> arr, int n,vector<int>&ans,int sum,int index){
+        
+         if(index==n){
+             ans.push_back(sum);
+             return;
+         }
+        
+        sum+=arr[index];
+        solve(arr,n,ans,sum,index+1);
+        sum-=arr[index];
+        
+        solve(arr,n,ans,sum,index+1);
+    }
+  
+    vector<int> subsetSums(vector<int> arr, int n) {
+        vector<int>ans;
+        int sum=0;
+        solve(arr,n,ans,sum,0);
+        return ans;
+    }
+
+// 31. SUBSET II
+
+ void solve(vector<int>& nums,vector<vector<int>>&ans,vector<int>&ds,int index){
+         ans.push_back(ds);
+        for(int i=index;i<nums.size();i++){
+            if(i>index && nums[i]==nums[i-1]) continue;
+            ds.push_back(nums[i]);
+            solve(nums,ans,ds,i+1);
+            ds.pop_back();
+        }
+    }
+
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        vector<vector<int>>ans;
+        vector<int>ds;
+        solve(nums,ans,ds,0);
+        return ans;
+    }
+
+// 32. Palindrome Partitioning
+
+ void solve(string s,vector<vector<string>>&ans,vector<string>&ds,int index){
+
+    if(index==s.size()){
+        ans.push_back(ds);
+        return;
+    }
+
+    for(int i=index;i<s.size();i++){
+        if(isPalindrome(s,index,i)){
+            ds.push_back(s.substr(index,i-index+1));
+            solve(s,ans,ds,i+1);
+            ds.pop_back();
+        }
+    }
+
+    }
+
+    bool isPalindrome(string s,int start,int end){
+        while(start<=end){
+            if(s[start++]!=s[end--]){
+                return false;
+            }
+
+           
+        }
+         return true;
+    }
+  
+    vector<vector<string>> partition(string s) {
+        vector<vector<string>>ans;
+        vector<string>ds;
+        solve(s,ans,ds,0);
+        return ans;
+    }
+
+// 33. M COLORING PROBLEM
+  bool isSafe(int node,int color[],bool graph[101][101],int n,int col){
+        for(int k=0;k<n;k++){
+            if(k!=node && graph[k][node]==1 && color[k]==col){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    bool solve(int node,int color[],bool graph[101][101],int m,int n){
+        if(node==n) return true;
+        
+        for(int i=1;i<=m;i++){
+            if(isSafe(node,color,graph,n,i)){
+                color[node]=i;
+                if(solve(node+1,color,graph,m,n)) return true;
+                color[node]=0;
+            }
+        }
+        return false;
+    }
+    
+    bool graphColoring(bool graph[101][101], int m, int n) {
+        int color[n]={0};
+        if(solve(0,color,graph,m,n)) return true;
+        return false;
+    }
+
+// 34. Count all subsequences with sum K
+ void solve(int arr[], int n, int sum,int &count,int index){
+	      if(index==n){
+	          if(sum==0){
+	              count++;
+	          }
+	          return;
+	      }
+	      
+	      if(arr[index]<=sum){
+	          solve(arr,n,sum-arr[index],count,index+1);
+	      }
+	      solve(arr,n,sum,count,index+1);
+	  }
+	
+	int perfectSum(int arr[], int n, int sum)
+	{
+	    
+        int count=0;
+        solve(arr,n,sum,count,0);
+        return (count);
+	}

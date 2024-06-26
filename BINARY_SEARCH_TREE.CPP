@@ -123,7 +123,7 @@ int solve(Node *root, int &k)
     }
 
     int right = solve(root->right, k);
-    if (right != -1)
+    if (right != -1)          // if ans is in right side than no need to go to left side
     {
         return right;
     }
@@ -144,6 +144,31 @@ int kthLargest(Node *root, int k)
 
     return solve(root, k);
 }
+
+// or
+
+  void solve(Node* root,int &k,int &ans,int &counter){
+        if(root==NULL) return ;
+        solve(root->right,k,ans,counter);
+        if(counter==k){
+            ans=root->data;
+            // counter++;
+            return;
+        }
+        else 
+        counter++;
+        
+        solve(root->left,k,ans,counter);
+         
+     }
+    
+    int kthLargest(Node *root, int K)
+    {
+       int ans=-1;
+       int counter=1;
+       solve(root,K,ans,counter);
+       return ans;
+    }
 
 // 5. Kth SMALLEST ELEMENT IN BST
 int solve(Node *root, int &k)
@@ -327,27 +352,20 @@ pair<int, int> predecessorSuccessor(BinaryTreeNode<int> *root, int key)
 }
 
 // 11. VALID BST                    50%
-bool solve(BinaryTreeNode<int> *root, int min, int max)
-{
-    if (root == NULL)
-    {
-        return true;
+ bool solve(TreeNode* root, long mini,long maxi){
+      if(root==NULL){
+         return true;
+      }
+
+     if(root->val>=maxi || root->val<=mini) return false;
+     return solve(root->left,mini,root->val) && solve(root->right,root->val,maxi);
+
+   }
+
+    bool isValidBST(TreeNode* root) {
+          long long int min = -1000000000000, max = 1000000000000;
+       return solve(root,min,max);   
     }
-    if (root->data >= min && root->data <= max)
-    {
-        bool left = solve(root->left, min, root->data - 1);
-        bool right = solve(root->right, root->data + 1, max);
-        return left && right;
-    }
-    else
-    {
-        return false;
-    }
-}
-bool validateBST(BinaryTreeNode<int> *root)
-{
-    return solve(root, INT_MIN, INT_MAX);
-}
 
 // 12. CONVERT BINARY TREE TO BST
 
@@ -571,5 +589,160 @@ vector<int> findLeastGreater(vector<int> &arr, int n)
         }
     }
     return arr;
+}
+
+// 18. MERGE TWO BST
+
+void solve(TreeNode* root,vector<int>&in){
+    if(root==NULL) return;
+
+    solve(root->left,in);
+    in.push_back(root->data);
+    solve(root->right,in);
+}
+
+vector<int> merge( vector<int>&bst1,vector<int>&bst2){
+    vector<int>finalBst(bst2.size()+bst1.size());
+    int i=0;
+    int j=0;
+    int k=0;
+    while(i<bst1.size() && j<bst2.size()){
+        if(bst1[i]<=bst2[j]){
+            finalBst[k++]=bst1[i++];
+        }
+        else{
+            finalBst[k++]=bst2[j++];
+        }
+    }
+
+    while(i<bst1.size()){
+         finalBst[k++]=bst1[i++];
+    }
+
+    while(j<bst2.size()){
+        finalBst[k++]=bst2[j++]; 
+    }
+    return finalBst;
+}
+
+TreeNode* makeTree(vector<int>&ans,int s,int e){
+    if(s>e) return NULL;
+    int mid=s+(e-s)/2;
+    TreeNode* root=new TreeNode(ans[mid]);
+    root->left=makeTree(ans, s, mid-1);
+    root->right=makeTree(ans, mid+1, int e);
+    return root;
+}
+
+vector<int> mergeBST(TreeNode *root1, TreeNode *root2)
+{
+    vector<int>bst1,bst2;
+    solve(root1,bst1);
+    solve(root2,bst2);
+   vector<int>ans=merge(bst1,bst2);
+   makeTree(ans,)
+    return ans;
+}
+
+// 19.  Convert Sorted List to Binary Search Tree
+ TreeNode* makeBalancedBST(vector<int>&bst,int s,int e){
+        if(s>e) return NULL;
+        int mid=s+(e-s)/2;
+        TreeNode* root=new TreeNode(bst[mid]);
+        root->left=makeBalancedBST(bst,s,mid-1);
+        root->right=makeBalancedBST(bst,mid+1,e);
+        return root;
+    }
+    TreeNode* sortedListToBST(ListNode* head) {
+        vector<int>bst;
+        ListNode* temp=head;
+        while(temp!=NULL){
+            bst.push_back(temp->val);
+            temp=temp->next;
+        }
+        int e=bst.size()-1;
+        return makeBalancedBST(bst,0,e);
+    }
+
+// 20. TWO SUM IN BST
+   
+   
+   void solve(TreeNode* root,vector<int>&in){
+    if(root==NULL) return;
+
+    solve(root->left,in);
+    in.push_back(root->val);
+    solve(root->right,in);
+   }
+    bool findTarget(TreeNode* root, int k) {
+      vector<int>in;
+      solve(root,in); 
+      int left=0;
+      int right=in.size()-1;
+      while(left<right){
+        if(in[left]+in[right]==k){
+            return true;
+        }
+        else if(in[left]+in[right]<k){
+            left++;
+        }
+        else{
+            right--;
+        }
+      }  
+
+      return false;
+    }
+ 
+// 21. LARGEST BST     OR LARGEST BST SUM ON LEETCODE
+
+class info{
+    
+  public:
+  int maxi;
+  int mini;
+  bool isBST;
+  int size;
+};
+
+class Solution{
+    public:
+    /*You are required to complete this method */
+    // Return the size of the largest sub-tree which is also a BST
+    
+    info solve(Node* root,int &ans){
+        if(root==NULL){
+            return {INT_MIN,INT_MAX,true,0};
+        }
+        
+        info left=solve(root->left,ans);
+        info right=solve(root->right,ans);
+        
+        info currNode;
+        currNode.size=left.size+right.size+1;
+        currNode.maxi=max(root->data,right.maxi);
+        currNode.mini=min(root->data,left.mini);
+        if(left.isBST && right.isBST && (root->data>left.maxi && root->data<right.mini)){
+            currNode.isBST=true;
+        }
+        else{
+             currNode.isBST=false;
+        }
+        
+        if(currNode.isBST==true){
+            ans=max(ans,currNode.size);
+        }
+        return currNode;
+        
+    }
+    
+    
+    
+    int largestBst(Node *root)
+    {
+       int maxSize=0;
+       solve(root,maxSize);
+       return maxSize;
+    }
 }
 

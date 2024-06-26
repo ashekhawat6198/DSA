@@ -85,7 +85,369 @@ vector<int> dfsOfGraph(int V, vector<int> adj[])
     return ans;
 }
 
-// 4. DETECT CYCLE IN UNDIRECTED GRAPH USING BFS
+// 4. NO OF PROVINCES
+void dfs(vector<int> adj[], unordered_map<int, bool> &visited, int node, int parent)
+{
+    visited[node] = true;
+    for (auto neighbour : adj[node])
+    {
+        if (!visited[neighbour])
+        {
+            dfs(adj, visited, neighbour, node);
+        }
+    }
+}
+
+int findCircleNum(vector<vector<int>> &edges)
+{
+    int n = edges.size();
+    vector<int> adjL[n];
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            if (edges[i][j] == 1 && i != j)
+            {
+                adjL[i].push_back(j);
+                adjL[j].push_back(i);
+            }
+        }
+    }
+
+    unordered_map<int, bool> visited;
+    int count = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (!visited[i])
+        {
+            count++;
+            dfs(adjL, visited, i, -1);
+        }
+    }
+    return count;
+}
+
+// 5. 0/1 MATRIX
+vector<vector<int>> updateMatrix(vector<vector<int>> &mat)
+{
+    int r = mat.size();
+    int c = mat[0].size();
+    queue<pair<int, int>> q;
+    vector<vector<int>> dist(r, vector<int>(c, -1));
+
+    for (int i = 0; i < r; i++)
+    {
+        for (int j = 0; j < c; j++)
+        {
+            if (mat[i][j] == 0)
+            {
+                dist[i][j] = 0;
+                q.push({i, j});
+            }
+        }
+    }
+
+    while (!q.empty())
+    {
+        pair<int, int> temp = q.front();
+        q.pop();
+        int i = temp.first;
+        int j = temp.second;
+        if ((i + 1) < r && dist[i + 1][j] == -1)
+        {
+            dist[i + 1][j] = dist[i][j] + 1;
+            q.push({i + 1, j});
+        }
+        if ((j + 1) < c && dist[i][j + 1] == -1)
+        {
+            dist[i][j + 1] = dist[i][j] + 1;
+            q.push({i, j + 1});
+        }
+        if ((i - 1) >= 0 && dist[i - 1][j] == -1)
+        {
+            dist[i - 1][j] = dist[i][j] + 1;
+            q.push({i - 1, j});
+        }
+        if ((j - 1) >= 0 && dist[i][j - 1] == -1)
+        {
+            dist[i][j - 1] = dist[i][j] + 1;
+            q.push({i, j - 1});
+        }
+    }
+
+    return dist;
+}
+
+// 6. Surrounded Regions
+
+bool isValid(int i, int j, int r, int c, vector<vector<char>> &board)
+{
+    if (i >= 0 && i < r && j >= 0 && j < c && board[i][j] == 'O')
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void dfs(vector<vector<char>> &board, int i, int j, int r, int c)
+{
+    board[i][j] = 'B';
+
+    if (isValid(i + 1, j, r, c, board))
+    {
+        dfs(board, i + 1, j, r, c);
+    }
+    if (isValid(i, j + 1, r, c, board))
+    {
+        dfs(board, i, j + 1, r, c);
+    }
+    if (isValid(i - 1, j, r, c, board))
+    {
+        dfs(board, i - 1, j, r, c);
+    }
+    if (isValid(i, j - 1, r, c, board))
+    {
+        dfs(board, i, j - 1, r, c);
+    }
+}
+
+void convert(vector<vector<char>> &board)
+{
+    int r = board.size();
+    int c = board[0].size();
+    for (int i = 0; i < r; i++)
+    {
+        for (int j = 0; j < c; j++)
+        {
+            if (board[i][j] == 'B')
+            {
+                board[i][j] = 'O';
+            }
+            else if (board[i][j] == 'O')
+            {
+                board[i][j] = 'X';
+            }
+        }
+    }
+}
+
+void solve(vector<vector<char>> &board)
+{
+    int r = board.size();
+    int c = board[0].size();
+    for (int i = 0; i < r; i++)
+    {
+
+        // left -> top to bottom
+        int j = 0;
+        if (board[i][j] == 'O')
+        {
+            dfs(board, i, j, r, c);
+        }
+
+        // right -> top to bottom
+        j = c - 1;
+        if (board[i][j] == 'O')
+        {
+            dfs(board, i, j, r, c);
+        }
+    }
+
+    for (int j = 0; j < c; j++)
+    {
+
+        // top->left to right
+        int i = 0;
+        if (board[i][j] == 'O')
+        {
+            dfs(board, i, j, r, c);
+        }
+
+        // bottom->left to right
+        i = r - 1;
+        if (board[i][j] == 'O')
+        {
+            dfs(board, i, j, r, c);
+        }
+    }
+
+    convert(board);
+}
+
+// 7. WORD LADDER
+
+int ladderLength(string beginWord, string endWord, vector<string> &wordList)
+{
+    queue<pair<string, int>> q;
+    q.push({beginWord, 1});
+    set<string> st(wordList.begin(), wordList.end());
+    st.erase(beginWord);
+    while (!q.empty())
+    {
+        string word = q.front().first;
+        int steps = q.front().second;
+        q.pop();
+        if (word == endWord)
+            return steps;
+        for (int i = 0; i < word.size(); i++)
+        {
+            char original = word[i];
+            for (char ch = 'a'; ch <= 'z'; ch++)
+            {
+                word[i] = ch;
+                // it exist
+                if (st.find(word) != st.end())
+                {
+                    st.erase(word);
+                    q.push({word, steps + 1});
+                }
+            }
+            // back to original means hit where t is changing then after changing we are placing t
+            // its original position
+            word[i] = original;
+        }
+    }
+
+    return 0;
+}
+
+// 8. NO OF ENCLAVES
+bool isValid(vector<vector<int>> &grid, int r, int c, int i, int j)
+{
+    if (i >= 0 && i < r && j >= 0 && j < c && grid[i][j] == 1)
+    {
+        return true;
+    }
+    return false;
+}
+
+void dfs(vector<vector<int>> &grid, int r, int c, int i, int j)
+{
+    grid[i][j] = 0;
+    if (isValid(grid, r, c, i + 1, j))
+    {
+        dfs(grid, r, c, i + 1, j);
+    }
+    if (isValid(grid, r, c, i - 1, j))
+    {
+        dfs(grid, r, c, i - 1, j);
+    }
+    if (isValid(grid, r, c, i, j + 1))
+    {
+        dfs(grid, r, c, i, j + 1);
+    }
+    if (isValid(grid, r, c, i, j - 1))
+    {
+        dfs(grid, r, c, i, j - 1);
+    }
+}
+
+void getCount(vector<vector<int>> &grid, int &count)
+{
+    int r = grid.size();
+    int c = grid[0].size();
+    for (int i = 0; i < r; i++)
+    {
+        for (int j = 0; j < c; j++)
+        {
+            if (grid[i][j] == 1)
+            {
+                count++;
+            }
+        }
+    }
+}
+
+int numEnclaves(vector<vector<int>> &grid)
+{
+    int r = grid.size();
+    int c = grid[0].size();
+    for (int i = 0; i < r; i++)
+    {
+        int j = 0;
+        if (grid[i][j] == 1)
+        {
+            dfs(grid, r, c, i, j);
+        }
+
+        j = c - 1;
+        if (grid[i][j] == 1)
+        {
+            dfs(grid, r, c, i, j);
+        }
+    }
+    for (int j = 0; j < c; j++)
+    {
+        int i = 0;
+        if (grid[i][j] == 1)
+        {
+            dfs(grid, r, c, i, j);
+        }
+
+        i = r - 1;
+        if (grid[i][j] == 1)
+        {
+            dfs(grid, r, c, i, j);
+        }
+    }
+
+    int count = 0;
+    getCount(grid, count);
+    return count;
+}
+
+// 9. Find eventual safe states
+vector<int> eventualSafeNodes(vector<vector<int>> &graph)
+{
+
+    int n = graph.size();
+    vector<int> adj[n];
+    vector<int> indegree(n, 0);
+
+    // transpose and indegree
+    for (int i = 0; i < n; i++)
+    {
+        for (auto j : graph[i])
+        {
+            adj[j].push_back(i);
+            indegree[i]++;
+        }
+    }
+
+    // node with 0 indegree push in queue
+    queue<int> q;
+    for (int i = 0; i < n; i++)
+    {
+        if (indegree[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+
+    // kjans algo
+    vector<int> ans;
+    while (!q.empty())
+    {
+        int top = q.front();
+        q.pop();
+        ans.push_back(top);
+        for (auto neighbour : adj[top])
+        {
+            indegree[neighbour]--;
+            if (indegree[neighbour] == 0)
+            {
+                q.push(neighbour);
+            }
+        }
+    }
+
+    sort(ans.begin(), ans.end());
+
+    return ans;
+}
+
+// 10. DETECT CYCLE IN UNDIRECTED GRAPH USING BFS
 bool bfs(vector<int> adj[], unordered_map<int, bool> &visited, int node)
 {
     unordered_map<int, int> parent;
@@ -133,7 +495,7 @@ bool isCycle(int V, vector<int> adj[])
     return false;
 }
 
-// 5. DETECT CYCLE IN UNDIRECTED GRAPH USING DFS
+// 11. DETECT CYCLE IN UNDIRECTED GRAPH USING DFS
 bool dfs(vector<int> adj[], unordered_map<int, bool> &visited, int node, int parent)
 {
     visited[node] = true;
@@ -172,7 +534,7 @@ bool isCycle(int V, vector<int> adj[])
     return false;
 }
 
-// 6. DETECT CYCLE IN DIRECTED GRAPH USING DFS
+// 12. DETECT CYCLE IN DIRECTED GRAPH USING DFS
 bool dfsdirected(unordered_map<int, list<int>> &adj, unordered_map<int, bool> &visited, unordered_map<int, bool> &dfsVisited, int node)
 {
     visited[node] = true;
@@ -221,7 +583,7 @@ int detectCycleInDirectedGraph(int n, vector<pair<int, int>> &edges)
     return false;
 }
 
-// 7. TOPOLOGICAL SORT USING DFS
+// 13. TOPOLOGICAL SORT USING DFS
 void solve(vector<int> adj[], unordered_map<int, bool> &visited, stack<int> &st, int node)
 {
     visited[node] = true;
@@ -259,7 +621,7 @@ vector<int> topoSort(int V, vector<int> adj[])
     return ans;
 }
 
-// 8.TOPOLOGICAL SORT USING BFS OR KAHN'S ALGORITHM          ( TC:- O(N+E) && O(N+E))         dekhna ek baar
+// 14.TOPOLOGICAL SORT USING BFS OR KAHN'S ALGORITHM          ( TC:- O(N+E) && O(N+E))         dekhna ek baar
 vector<int> topoSort(int V, vector<int> adj[])
 {
     // find all indegrees
@@ -304,7 +666,7 @@ vector<int> topoSort(int V, vector<int> adj[])
     return ans;
 }
 
-// 9. DETECT CYCLE IN DIRECTED GRAPH USING BFS/KAHNS ALGO             ( TC:- O(N+E) && O(N+E))
+// 15. DETECT CYCLE IN DIRECTED GRAPH USING BFS/KAHNS ALGO             ( TC:- O(N+E) && O(N+E))
 bool isCyclic(int V, vector<int> adj[])
 {
     vector<int> indegree(V);
@@ -353,7 +715,7 @@ bool isCyclic(int V, vector<int> adj[])
     }
 }
 
-// 10.  SHORTEST PATH IN UNDIRECTED AND UNWEIGHTED GRAPH
+// 16.  SHORTEST PATH IN UNDIRECTED AND UNWEIGHTED GRAPH
 
 vector<int> shortestPath(vector<pair<int, int>> edges, int n, int m, int s, int t)
 {
@@ -406,7 +768,7 @@ vector<int> shortestPath(vector<pair<int, int>> edges, int n, int m, int s, int 
     return ans;
 }
 
-// 11. SHORTEST PATH IN DIRECTED ACYCLIC GRAPH               ( TC:- O(N+E) && O(N+E))
+// 17. SHORTEST PATH IN DIRECTED ACYCLIC GRAPH               ( TC:- O(N+E) && O(N+E))
 
 void solve(unordered_map<int, list<pair<int, int>>> &adj, unordered_map<int, bool> &visited, stack<int> &st, int node)
 {
@@ -477,7 +839,7 @@ vector<int> shortestPath(int N, int M, vector<vector<int>> &edges)
     return dis;
 }
 
-// 12. PRIMS ALGORITHM
+// 18. PRIMS ALGORITHM
 
 vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pair<int, int>, int>> &g)
 {
@@ -548,7 +910,7 @@ vector<pair<pair<int, int>, int>> calculatePrimsMST(int n, int m, vector<pair<pa
     return result;
 }
 
-// 13. DIJKSTRA'S ALGORITHM            (TC:- O( E LOG V) && SC:- O(N+E))
+// 19. DIJKSTRA'S ALGORITHM            (TC:- O( E LOG V) && SC:- O(N+E))
 
 vector<int> dijkstra(vector<vector<int>> &vec, int vertices, int edges, int source)
 {
@@ -609,11 +971,9 @@ vector<int> dijkstra(vector<vector<int>> &vec, int vertices, int edges, int sour
     }
 
     return dis;
-    
-    
 }
 
-// 14. KRUSKAL'S ALGORTIHM
+// 20. KRUSKAL'S ALGORTIHM
 bool cmp(vector<int> &a, vector<int> &b)
 {
     return a[2] < b[2];
@@ -680,7 +1040,7 @@ int minimumSpanningTree(vector<vector<int>> &edges, int n)
     return minWeight;
 }
 
-// 15. BRIDGES IN GRAPH
+// 21. BRIDGES IN GRAPH
 void dfs(int node, int parent, vector<int> &dis, vector<int> &low, int timer,
          unordered_map<int, bool> &vis, vector<vector<int>> &result, unordered_map<int, list<int>> &adj)
 {
@@ -752,7 +1112,7 @@ vector<vector<int>> findBridges(vector<vector<int>> &edges, int v, int e)
     return result;
 }
 
-// 16. ARTICUALTION POINT
+// 22. ARTICUALTION POINT
 
 void dfs(int node, int parent, vector<int> &dis, vector<int> &low, int timer,
          unordered_map<int, bool> &vis, vector<vector<int>> &result, unordered_map<int, list<int>> &adj)
@@ -823,7 +1183,7 @@ vector<vector<int>> findBridges(vector<vector<int>> &edges, int v, int e)
     return result;
 }
 
-// 17.Count Strongly Connected Components (Kosaraju’s Algorithm)
+// 23.Count Strongly Connected Components (Kosaraju’s Algorithm)
 
 void dfs(int node, stack<int> &st, unordered_map<int, bool> &visited, unordered_map<int, list<int>> &adj)
 {
@@ -901,7 +1261,7 @@ int stronglyConnectedComponents(int v, vector<vector<int>> &edges)
     return count;
 }
 
-// 18. BELLMAN FORD ALGORITHM
+// 24. BELLMAN FORD ALGORITHM
 
 int bellmonFord(int n, int m, int src, int dest, vector<vector<int>> &edges)
 {
@@ -947,7 +1307,7 @@ int bellmonFord(int n, int m, int src, int dest, vector<vector<int>> &edges)
     // return dis[dest];
 }
 
-// 19. CLONE A GRAPH
+// 25. CLONE A GRAPH
 
 Node *dfs(Node *node, unordered_map<Node *, Node *> &mp)
 {
@@ -987,7 +1347,7 @@ Node *cloneGraph(Node *node)
     return dfs(node, mp);
 }
 
-// 20. FLOOD FILL ALGORITHM
+// 26. FLOOD FILL ALGORITHM
 
 void dfs(int i, int j, vector<vector<int>> &vis, vector<vector<int>> &image, int newColor, int r, int c, int oldColor)
 {
@@ -1057,7 +1417,7 @@ int numIslands(vector<vector<char>> &grid)
     return count;
 }
 
-// 22. MAKING WIRED CONNECTIONS
+// 27. MAKING WIRED CONNECTIONS
 
 void dfs(int node, unordered_map<int, bool> &vis, vector<vector<int>> &connections, unordered_map<int, list<int>> &adj)
 {
@@ -1103,7 +1463,7 @@ int makeConnected(int n, vector<vector<int>> &connections)
     return count - 1;
 }
 
-// 23. STEPS BY KNIGHT
+// 28. STEPS BY KNIGHT
 
 int minStepToReachTarget(vector<int> &KnightPos, vector<int> &TargetPos, int N)
 {
@@ -1178,7 +1538,7 @@ int minStepToReachTarget(vector<int> &KnightPos, vector<int> &TargetPos, int N)
     return vis[tx - 1][ty - 1];
 }
 
-// 24. PREREQUISITE TASKS
+// 29. PREREQUISITE TASKS
 bool dfs(int node, unordered_map<int, list<int>> &adj, unordered_map<int, bool> &visited,
          unordered_map<int, bool> &dfsvisited)
 {
@@ -1230,7 +1590,7 @@ bool isPossible(int N, int P, vector<pair<int, int>> &pre)
     return true;
 }
 
-// 25. MINIMUM TIME TAKEN BY EACH JOB TO BE COMPLETED GIVEN BY DAG
+// 30. MINIMUM TIME TAKEN BY EACH JOB TO BE COMPLETED GIVEN BY DAG
 vector<int> minimumTime(int n, vector<vector<int>> &edges, int m)
 {
     unordered_map<int, list<int>> adj;
@@ -1289,7 +1649,7 @@ vector<int> minimumTime(int n, vector<vector<int>> &edges, int m)
     return res;
 }
 
-// 26. BIPARTITE GRAPH    = COLOR THE GRAPGH WITHIN TWO COLORS SUCH THAT NO ADJACENT NODES HAVE SAME COLOR        *** TO DO
+// 31. BIPARTITE GRAPH    = COLOR THE GRAPGH WITHIN TWO COLORS SUCH THAT NO ADJACENT NODES HAVE SAME COLOR        *** TO DO
 // LINEAR GRAPH WHICH HAVE NO CYCLE ARE ALWAYS  BIPARTITE GRAPH
 // ANY GRAPH WITH EVEN CYCLE LENGTH CAN ALSO BE BIPARTITE
 // ANY GRAPH WITH ODD CYCLE LENGTH CAN NEVER BE A BIPARTITIE
@@ -1347,7 +1707,7 @@ bool isBipartite(int V, vector<int> adj[])
     return true;
 }
 
-// 27. JOURNEY TO THE MOON
+// 32. JOURNEY TO THE MOON
 
 void solve(int node, unordered_map<int, list<int>> &adj, int &counter, unordered_map<int, bool> &visited)
 {
@@ -1397,3 +1757,239 @@ int journeyToMoon(int n, vector<vector<int>> astronaut)
 
     return val;
 }
+
+// 33. Shortest path in a binary maze
+int shortestPathBinaryMatrix(vector<vector<int>> &grid)
+{
+    int n = grid.size();
+    int m = grid[0].size();
+    queue<pair<int, pair<int, int>>> q;
+    vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+    if (grid[0][0] == 1)
+        return -1;
+    dist[0][0] = 0;
+    q.push({0, {0, 0}});
+    int dr[] = {-1, 0, 1, 0, -1, -1, 1, 1};
+    int dc[] = {0, 1, 0, -1, 1, -1, 1, -1};
+    while (!q.empty())
+    {
+        auto it = q.front();
+        q.pop();
+        int dis = it.first;
+        int r = it.second.first;
+        int c = it.second.second;
+        if (r == n - 1 && c == m - 1)
+            return 1 + dis;
+        for (int i = 0; i < 8; i++)
+        {
+            int newr = r + dr[i];
+            int newc = c + dc[i];
+
+            if (newr >= 0 && newr < n && newc >= 0 && newc < m &&
+                grid[newr][newc] == 0 && dis + 1 < dist[newr][newc])
+            {
+                dist[newr][newc] = 1 + dis;
+                // if(newr==n-1 && newc==m-1){
+                //     return dis+1;
+                // }
+                q.push({1 + dis, {newr, newc}});
+            }
+        }
+    }
+    return -1;
+}
+
+// 34. ALIEN DIRECTORY
+vector<int> topoSort(int V, vector<int> adj[])
+{
+    // find all indegrees
+    vector<int> in(V);
+    for (int i = 0; i < V; i++)
+    {
+        for (auto j : adj[i])
+        {
+            in[j]++;
+        }
+    }
+
+    // 0 degree waalo ko push krdo
+    queue<int> q;
+    for (int i = 0; i < V; i++)
+    {
+        if (in[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+
+    // bfs kro
+    vector<int> ans;
+    while (!q.empty())
+    {
+        int frontNode = q.front();
+        q.pop();
+
+        ans.push_back(frontNode);
+
+        for (auto neighbour : adj[frontNode])
+        {
+            in[neighbour]--;
+            if (in[neighbour] == 0)
+            {
+                q.push(neighbour);
+            }
+        }
+    }
+
+    return ans;
+}
+
+string findOrder(string dict[], int N, int K)
+{
+
+    vector<int> adj[K];
+    for (int i = 0; i < N - 1; i++)
+    {
+        string word1 = dict[i];
+        string word2 = dict[i + 1];
+        int len = min(word1.size(), word2.size());
+        for (int j = 0; j < len; j++)
+        {
+            if (word1[j] != word2[j])
+            {
+                adj[word1[j] - 'a'].push_back(word2[j] - 'a');
+                break;
+            }
+        }
+    }
+
+    vector<int> topo = topoSort(K, adj);
+
+    string ans = "";
+    for (auto i : topo)
+    {
+        ans = ans + char(i + 'a');
+    }
+    return ans;
+}
+
+// 35. PATH WITH MINIMUM EFFORT
+int minimumEffortPath(vector<vector<int>> &heights)
+{ // {diff,{row,col}}
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>,
+                   greater<pair<int, pair<int, int>>>>
+        pq;
+    int n = heights.size();
+    int m = heights[0].size();
+    vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+    dist[0][0] = 0;
+    pq.push({0, {0, 0}});
+    int dr[] = {-1, 0, 1, 0};
+    int dc[] = {0, 1, 0, -1};
+    while (!pq.empty())
+    {
+        auto it = pq.top();
+        pq.pop();
+        int diff = it.first;
+        int row = it.second.first;
+        int col = it.second.second;
+
+        if (row == n - 1 && col == m - 1)
+            return diff;
+        for (int i = 0; i < 4; i++)
+        {
+            int newr = row + dr[i];
+            int newc = col + dc[i];
+            if (newr >= 0 && newr < n && newc >= 0 && newc < m)
+            {
+                int newEffort = max(abs(heights[row][col] - heights[newr][newc]), diff);
+                if (newEffort < dist[newr][newc])
+                {
+                    dist[newr][newc] = newEffort;
+                    pq.push({dist[newr][newc], {newr, newc}});
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+// 36. Cheapest flights within k stops
+int findCheapestPrice(int n, vector<vector<int>> &flights, int src, int dst, int k)
+{
+    vector<pair<int, int>> adj[n];
+    for (auto it : flights)
+    {
+        adj[it[0]].push_back({it[1], it[2]});
+    }
+
+    vector<int> dist(n, INT_MAX);
+    queue<pair<int, pair<int, int>>> q;
+    q.push({0, {src, 0}});
+    dist[src] = 0;
+    while (!q.empty())
+    {
+        auto it = q.front();
+        q.pop();
+        int stops = it.first;
+        int node = it.second.first;
+        int cost = it.second.second;
+        if (stops > k)
+            continue; // you can go 1+stops not more than that i.e. (k==2) here k will be 3
+        for (auto iter : adj[node])
+        {
+            int adjNode = iter.first;
+            int adjW = iter.second;
+            if (cost + adjW < dist[adjNode] && stops <= k)
+            { // yaha tak stops equal ho ya kam ho
+                dist[adjNode] = cost + adjW;
+                q.push({stops + 1, {adjNode, cost + adjW}});
+            }
+        }
+    }
+
+    if (dist[dst] == INT_MAX)
+        return -1;
+    return dist[dst];
+}
+
+// 37. Number of Ways to Arrive at Destination
+int countPaths(int n, vector<vector<int>>& roads) {
+       vector<pair< int,long long int>>adj[n];
+       for(auto it:roads){
+          adj[it[0]].push_back({it[1],it[2]});
+          adj[it[1]].push_back({it[0],it[2]});
+       } 
+
+        priority_queue<pair<long long int,long long int>,vector<pair<long long int,long long int>>,greater<pair<long long int,long long int>>>pq;
+        vector<long long int>dist(n,LONG_MAX);
+        vector<int>ways(n,0);
+        dist[0]=0;
+        ways[0]=1;
+        int mod=(1e9+7);
+        pq.push({0,0});   // dist,node
+        while(!pq.empty()){
+            long long  int dis=pq.top().first;
+             int node=pq.top().second;
+            pq.pop();
+            for(auto it:adj[node]){
+                  int adjNode=it.first;
+                    long long int edW=it.second;
+                 // this is the first time i am arriving
+                 // with this short distance
+                 if(dis+edW<dist[adjNode]){
+                    dist[adjNode]=dis+edW;
+                    pq.push({dis+edW,adjNode});
+                    ways[adjNode]=ways[node];
+                 }
+                 else if(dis+edW==dist[adjNode]){
+                    ways[adjNode]=(ways[adjNode]+ways[node])%mod;
+                 }
+
+            }
+        }
+
+        return ways[n-1]%mod;
+
+        
+    }

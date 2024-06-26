@@ -140,6 +140,26 @@ vector<int> findDuplicates(vector<int> &nums)
     }
     return temp;
 }
+
+// OPTIMISED APPROACH      O(N)
+vector<int> findDuplicates(vector<int> &nums)
+{
+    vector<int> ans;
+    for (int i = 0; i < nums.size(); i++)
+    {
+        if (nums[abs(nums[i]) - 1] > 0)
+        {
+            nums[abs(nums[i]) - 1] = -nums[abs(nums[i]) - 1];
+        }
+        else
+        {
+            ans.push_back(abs(nums[i]));
+        }
+    }
+
+    return ans;
+}
+
 // 8. INTERSECTION OF TWO ARRAYS ( https://www.codingninjas.com/codestudio/problems/intersection-of-2-arrays_1082149?source=youtube&campaign=love_babbar_codestudio1&utm_source=youtube&utm_medium=affiliate&utm_campaign=love_babbar_codestudio1 )
 int intersection(int array1[], int array2[], int n, int m)
 {
@@ -308,6 +328,23 @@ void lRotate(int array1[], int n, int k)
   }*/
 
 // 15. FIND SECOND LARGEST AND SECOND SMALLEST NUMBER IN THE ARRAY
+
+// brute force approach
+
+int print2largest(int arr[], int n)
+{
+    sort(arr, arr + n, greater<int>());
+    for (int i = 1; i < n; i++)
+    {
+        if (arr[i] != arr[i - 1])
+            return arr[i];
+    }
+
+    return -1;
+}
+
+// better
+
 int SecondLargest(int array[], int n)
 {
 
@@ -358,22 +395,27 @@ int SecondSmallest(int array[], int n)
 
 // 16. MAJORITY ELEMENT (OCCURENCE > SIZE/2)
 
-   // BRUTE FORCE
-    int majorityElement(vector<int>& nums) {
-        int n=nums.size();
-        for(int i=0;i<n;i++){
-            int count=0;
-            for(int j=0;j<n;j++){
-                if(nums[i]==nums[j]){
-                    count++;
-                }
+// BRUTE FORCE
+int majorityElement(vector<int> &nums)
+{
+    int n = nums.size();
+    for (int i = 0; i < n; i++)
+    {
+        int count = 0;
+        for (int j = 0; j < n; j++)
+        {
+            if (nums[i] == nums[j])
+            {
+                count++;
             }
-            if(count>n/2) return nums[i];
         }
-        return -1;
+        if (count > n / 2)
+            return nums[i];
     }
+    return -1;
+}
 
-    // OPTIMAL APPROACH
+// OPTIMAL APPROACH
 
 int majorityE(int array[], int n)
 {
@@ -1251,325 +1293,441 @@ vector<int> findUnion(int arr1[], int arr2[], int n, int m)
 }
 
 // 43.COUNT INVERSION
-    
-    // BRUTE FORCE
 
-     long long int inversionCount(long long arr[], long long N)
+// BRUTE FORCE
+
+long long int inversionCount(long long arr[], long long N)
+{
+    long long int cnt = 0;
+    for (int i = 0; i < N - 1; i++)
     {
-       long long int cnt=0;
-       for(int i=0;i<N-1;i++){
-           for(int j=i+1;j<N;j++){
-              if(arr[i]>arr[j]){
-                  cnt++;
-              } 
-           }
-       }
-       return cnt;
-    }
-
-
-
-    // OPTIMAL 
-    long long int cnt=0;
-       long long int merge(long long arr[],int s,int e){
-        int mid=s+(e-s)/2;
-        int len1=mid-s+1;
-        int len2=e-mid;
-        long long int *left=new long long int[len1];
-        long long int *right=new long long int[len2];
-        long long int cnt=0;
-        int mainindexarray=s;
-        for(int i=0;i<len1;i++){
-            left[i]=arr[mainindexarray++];
-        }
-        
-        mainindexarray=mid+1;
-        for(int i=0;i<len2;i++){
-           right[i]=arr[mainindexarray++];
-        }
-        
-        int i=0;
-        int j=0;
-        mainindexarray=s;
-        
-        while(i<len1 && j<len2){
-            if(left[i]<=right[j]){
-                arr[mainindexarray]=left[i];
-                mainindexarray++;
-                i++;
-                
-            }
-            else{
-                arr[mainindexarray]=right[j];
-                cnt+=len1-i;
-                mainindexarray++;
-                j++;
+        for (int j = i + 1; j < N; j++)
+        {
+            if (arr[i] > arr[j])
+            {
+                cnt++;
             }
         }
-        
-        while(i<len1){
-            arr[mainindexarray++]=left[i++];
-        }
-        
-        while(j<len2){
-            arr[mainindexarray++]=right[j++];
-        }
-        
-        
-        delete []left;
-        delete []right;
-        return cnt;
     }
-    
-   long long int  sort(long long arr[],int s,int e){
-         long long int cnt=0;
-        if(s>=e){
-            return cnt;
-        }
-        
-        int mid=s+(e-s)/2;
-        cnt+=sort(arr,s,mid);
-        cnt+=sort(arr,mid+1,e);
-        
-        cnt+=merge(arr,s,e);
-        return cnt;
-    }
-    
-    long long int inversionCount(long long arr[], long long N)
+    return cnt;
+}
+
+// OPTIMAL
+long long int cnt = 0;
+long long int merge(long long arr[], int s, int e)
+{
+    int mid = s + (e - s) / 2;
+    int len1 = mid - s + 1;
+    int len2 = e - mid;
+    long long int *left = new long long int[len1];
+    long long int *right = new long long int[len2];
+    long long int cnt = 0;
+    int mainindexarray = s;
+    for (int i = 0; i < len1; i++)
     {
-        
-       return sort(arr,0,N-1);
-       
+        left[i] = arr[mainindexarray++];
     }
 
+    mainindexarray = mid + 1;
+    for (int i = 0; i < len2; i++)
+    {
+        right[i] = arr[mainindexarray++];
+    }
+
+    int i = 0;
+    int j = 0;
+    mainindexarray = s;
+
+    while (i < len1 && j < len2)
+    {
+        if (left[i] <= right[j])
+        {
+            arr[mainindexarray] = left[i];
+            mainindexarray++;
+            i++;
+        }
+        else
+        {
+            arr[mainindexarray] = right[j];
+            cnt += len1 - i;
+            mainindexarray++;
+            j++;
+        }
+    }
+
+    while (i < len1)
+    {
+        arr[mainindexarray++] = left[i++];
+    }
+
+    while (j < len2)
+    {
+        arr[mainindexarray++] = right[j++];
+    }
+
+    delete[] left;
+    delete[] right;
+    return cnt;
+}
+
+long long int sort(long long arr[], int s, int e)
+{
+    long long int cnt = 0;
+    if (s >= e)
+    {
+        return cnt;
+    }
+
+    int mid = s + (e - s) / 2;
+    cnt += sort(arr, s, mid);
+    cnt += sort(arr, mid + 1, e);
+
+    cnt += merge(arr, s, e);
+    return cnt;
+}
+
+long long int inversionCount(long long arr[], long long N)
+{
+
+    return sort(arr, 0, N - 1);
+}
 
 // 44. REVERSE PAIRS
 
-void merge(vector<int>&nums,int s,int e){
-     int mid=s+(e-s)/2;
-     int len1=mid-s+1;
-     int len2=e-mid;
-     int* left=new int[len1];
-     int *right=new int[len2];
+void merge(vector<int> &nums, int s, int e)
+{
+    int mid = s + (e - s) / 2;
+    int len1 = mid - s + 1;
+    int len2 = e - mid;
+    int *left = new int[len1];
+    int *right = new int[len2];
 
-      int mainindexarray=s;
-     for(int i=0;i<len1;i++){
-              left[i]=nums[mainindexarray++];
-     }
-
-     mainindexarray=mid+1;
-     for(int i=0;i<len2;i++){
-         right[i]=nums[mainindexarray++];
-     }
-
-     int i=0;
-     int j=0;
-     mainindexarray=s;
-     while(i<len1 && j<len2){
-         if(left[i]<right[j]){
-             nums[mainindexarray++]=left[i++];
-         }
-         else{
-             nums[mainindexarray++]=right[j++];
-         }
-     }
-
-     while(i<len1){
-         nums[mainindexarray++]=left[i++];
-     }
-
-     while(j<len2){
-          nums[mainindexarray++]=right[j++];
-     }
-       
-       delete []left;
-       delete []right;
-
+    int mainindexarray = s;
+    for (int i = 0; i < len1; i++)
+    {
+        left[i] = nums[mainindexarray++];
     }
 
-    int countPairs(vector<int>& nums,int low,int high,int mid){
-        int right=mid+1;
-        int cnt=0;
-        for(int i=low;i<=mid;i++){
-            while(right<=high && nums[i]>2*(long long)nums[right]){
-               right++;
-            } 
-              cnt+=(right-(mid+1));  
+    mainindexarray = mid + 1;
+    for (int i = 0; i < len2; i++)
+    {
+        right[i] = nums[mainindexarray++];
+    }
+
+    int i = 0;
+    int j = 0;
+    mainindexarray = s;
+    while (i < len1 && j < len2)
+    {
+        if (left[i] < right[j])
+        {
+            nums[mainindexarray++] = left[i++];
         }
-
-        return cnt;
-
-    }
-    int sort(vector<int>& nums,int s,int e){
-        int cnt=0;
-        if(s>=e){
-            return cnt;
+        else
+        {
+            nums[mainindexarray++] = right[j++];
         }
+    }
 
-        int mid=s+(e-s)/2;
-        cnt+=sort(nums,s,mid);
-        cnt+=sort(nums,mid+1,e);
-        cnt+=countPairs(nums,s,e,mid);
-        merge(nums,s,e);
+    while (i < len1)
+    {
+        nums[mainindexarray++] = left[i++];
+    }
+
+    while (j < len2)
+    {
+        nums[mainindexarray++] = right[j++];
+    }
+
+    delete[] left;
+    delete[] right;
+}
+
+int countPairs(vector<int> &nums, int low, int high, int mid)
+{
+    int right = mid + 1;
+    int cnt = 0;
+    for (int i = low; i <= mid; i++)
+    {
+        while (right <= high && nums[i] > 2 * (long long)nums[right])
+        {
+            right++;
+        }
+        cnt += (right - (mid + 1));
+    }
+
+    return cnt;
+}
+int sort(vector<int> &nums, int s, int e)
+{
+    int cnt = 0;
+    if (s >= e)
+    {
         return cnt;
-
     }
 
-    int reversePairs(vector<int>& nums) {
-       return sort(nums,0,nums.size()-1); 
-    }
+    int mid = s + (e - s) / 2;
+    cnt += sort(nums, s, mid);   
+    cnt += sort(nums, mid + 1, e);
+    cnt += countPairs(nums, s, e, mid);
+    merge(nums, s, e);
+    return cnt;
+}
+
+int reversePairs(vector<int> &nums)
+{
+    return sort(nums, 0, nums.size() - 1);
+}
 
 // 45. 4 SUM
-vector<vector<int>> fourSum(vector<int>& nums, int target) {
-          int n=nums.size();
-          sort(nums.begin(),nums.end());
-          set<vector<int>>st;
-          for(int i=0;i<n-3;i++){
-            for(int j=i+1;j<n-2;j++){
-                int k=j+1;
-                int l=n-1;
-                while(k<l){
-                    long long sum=(long long)nums[i]+nums[j]+nums[k]+nums[l];
-                    if(sum==target){
-                      st.insert({nums[i],nums[j],nums[k],nums[l]});
-                      k++;
-                      l--;
 
-                    }
-                    else if(sum<target){
-                     k++;
-                    }
-                    else{
-                        l--;
+// brute force
+vector<vector<int>> fourSum(vector<int> &nums, int target)
+{
+    vector<vector<int>> ans;
+    set<vector<int>> st;
+    sort(nums.begin(), nums.end());
+    int n = nums.size();
+    for (int i = 0; i < n - 3; i++)
+    {
+        for (int j = i + 1; j < n - 2; j++)
+        {
+            for (int k = j + 1; k < n - 1; k++)
+            {
+                for (int l = k + 1; l < n; l++)
+                {
+                    long long sum = (long long)nums[i] + nums[j] + nums[k] + nums[l];
+                    if (sum == target)
+                    {
+                        st.insert({nums[i], nums[j], nums[k], nums[l]});
                     }
                 }
             }
-          }
-
-           vector<vector<int>>ans(st.begin(),st.end());
-           return ans;
+        }
     }
+
+    ans = {st.begin(), st.end()};
+
+    return ans;
+}
+
+// optimised
+vector<vector<int>> fourSum(vector<int> &nums, int target)
+{
+    int n = nums.size();
+    sort(nums.begin(), nums.end());
+    set<vector<int>> st;
+    for (int i = 0; i < n - 3; i++)
+    {
+        for (int j = i + 1; j < n - 2; j++)
+        {
+            int k = j + 1;
+            int l = n - 1;
+            while (k < l)
+            {
+                long long sum = (long long)nums[i] + nums[j] + nums[k] + nums[l];
+                if (sum == target)
+                {
+                    st.insert({nums[i], nums[j], nums[k], nums[l]});
+                    k++;
+                    l--;
+                }
+                else if (sum < target)
+                {
+                    k++;
+                }
+                else
+                {
+                    l--;
+                }
+            }
+        }
+    }
+
+    vector<vector<int>> ans(st.begin(), st.end());
+    return ans;
+}
 
 // 46. Find the repeating and missing number
 
 // BRUTE FORCE
- vector<int> findTwoElement(vector<int> arr, int n) {
-        int missing=-1;
-        int repeating=-1;
-        vector<int>ans;
-        for(int i=1;i<=n;i++){
-            int count=0;
-            for(int j=0;j<n;j++){
-                if(arr[j]==i){
-                    count++;
-                }
-            }
-            
-            if(count==2) repeating=i;
-            else if(count==0) missing=i;
-            if(repeating !=-1 && missing!=-1) break;
-        }
-        
-        ans.push_back(repeating);
-        ans.push_back(missing);
-        return ans;
-    }
-
-
-// OPTIMAL APPROACH                                     
-
-
-    vector<int> findTwoElement(vector<int> arr, int n) {
-        
-    vector<int> result(2);
-    int repeating = -1;
+vector<int> findTwoElement(vector<int> arr, int n)
+{
     int missing = -1;
-    
-    for (int i = 0; i < n; ++i) {
-        if (arr[abs(arr[i]) - 1] > 0) {                        // -1 because it is zero based indexing
-            arr[abs(arr[i]) - 1] = -arr[abs(arr[i]) - 1];
-        } else {
-            repeating = abs(arr[i]);
+    int repeating = -1;
+    vector<int> ans;
+    for (int i = 1; i <= n; i++)
+    {
+        int count = 0;
+        for (int j = 0; j < n; j++)
+        {
+            if (arr[j] == i)
+            {
+                count++;
+            }
         }
-    }
-    
-    for (int i = 0; i < n; ++i) {
-        if (arr[i] > 0) {
-            missing = i + 1;
+
+        if (count == 2)
+            repeating = i;
+        else if (count == 0)
+            missing = i;
+        if (repeating != -1 && missing != -1)
             break;
-        }
     }
-    
-    result[0] = repeating;
-    result[1] = missing;
-    
-    return result;
-    
-}
 
-
-// 47. MAJORITY ELEMENT ( N/3 TIMES )
-
-    // BETTER APPORACH
-
- vector<int> majorityElement(vector<int>& nums) {         // TIME :- O(n)   && SPACE :- O(n)
-        vector<int>ls;
-        map<int,int>mp;
-        int n=nums.size();
-        int mini=(n/3)+1;
-        for(int i=0;i<n;i++){
-             mp[nums[i]]++;
-             if(mp[nums[i]]==mini){
-                ls.push_back(nums[i]);
-             }
-
-             if(ls.size()==2) break;
-        }
-
-        return ls;
+    ans.push_back(repeating);
+    ans.push_back(missing);
+    return ans;
 }
 
 // OPTIMAL APPROACH
 
- vector<int> majorityElement(vector<int>& nums) {              // TIME :- O(n)   && SPACE :- O(1)
-       int cnt1=0;
-       int element1=0;
-       int cnt2=0;
-       int element2=0;
-       int n=nums.size();
-       for(int i=0;i<n;i++){
-           if(cnt1==0 && element2!=nums[i]){
-            cnt1=1;
-            element1=nums[i];
-           }   
-           else if(cnt2==0 && element1!=nums[i]){
-             cnt2=1;
-            element2=nums[i];
-           }
-           else if(element1==nums[i]){
-            cnt1++;
-           }
-           else if(element2==nums[i]){
-            cnt2++;
-           }
-           else {
-            cnt1--;
-            cnt2--;
-           }
-       } 
+vector<int> findTwoElement(vector<int> arr, int n)
+{
 
-         vector<int>ls;
-         cnt1=0,cnt2=0;
-       for(int i=0;i<n;i++){
-          if(element1==nums[i]) cnt1++;
-          else if(element2==nums[i]) cnt2++;
-       }
+    vector<int> result(2);
+    int repeating = -1;
+    int missing = -1;
 
-       int mini=(n/3)+1;
-        if(cnt1>=mini) ls.push_back(element1);
-        if(cnt2>=mini) ls.push_back(element2);
-        return ls;
+    for (int i = 0; i < n; ++i)
+    {
+        if (arr[abs(arr[i]) - 1] > 0)
+        { // -1 because it is zero based indexing
+            arr[abs(arr[i]) - 1] = -arr[abs(arr[i]) - 1];
+        }
+        else
+        {
+            repeating = abs(arr[i]);
+        }
     }
 
+    for (int i = 0; i < n; ++i)
+    {
+        if (arr[i] > 0)
+        {
+            missing = i + 1;
+            break;
+        }
+    }
+
+    result[0] = repeating;
+    result[1] = missing;
+
+    return result;
+}
+
+// 47. MAJORITY ELEMENT ( N/3 TIMES )
+
+// BETTER APPORACH
+
+vector<int> majorityElement(vector<int> &nums)
+{ // TIME :- O(n)   && SPACE :- O(n)
+    vector<int> ls;
+    map<int, int> mp;
+    int n = nums.size();
+    int mini = (n / 3) + 1;
+    for (int i = 0; i < n; i++)
+    {
+        mp[nums[i]]++;
+        if (mp[nums[i]] == mini)
+        {
+            ls.push_back(nums[i]);
+        }
+
+        if (ls.size() == 2)
+            break;
+    }
+
+    return ls;
+}
+
+// OPTIMAL APPROACH
+
+vector<int> majorityElement(vector<int> &nums)
+{ // TIME :- O(n)   && SPACE :- O(1)
+    int cnt1 = 0;
+    int element1 = 0;
+    int cnt2 = 0;
+    int element2 = 0;
+    int n = nums.size();
+    for (int i = 0; i < n; i++)
+    {
+        if (cnt1 == 0 && element2 != nums[i])
+        {
+            cnt1 = 1;
+            element1 = nums[i];
+        }
+        else if (cnt2 == 0 && element1 != nums[i])
+        {
+            cnt2 = 1;
+            element2 = nums[i];
+        }
+        else if (element1 == nums[i])
+        {
+            cnt1++;
+        }
+        else if (element2 == nums[i])
+        {
+            cnt2++;
+        }
+        else
+        {
+            cnt1--;
+            cnt2--;
+        }
+    }
+
+    vector<int> ls;
+    cnt1 = 0, cnt2 = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (element1 == nums[i])
+            cnt1++;
+        else if (element2 == nums[i])
+            cnt2++;
+    }
+
+    int mini = (n / 3) + 1;
+    if (cnt1 >= mini)
+        ls.push_back(element1);
+    if (cnt2 >= mini)
+        ls.push_back(element2);
+    return ls;
+}
 
 
+//48. Subarray Sum Equals K
+
+  // BRUTE FORCE    O(N*N)
+   int subarraySum(vector<int>& nums, int k) {
+        int n=nums.size();
+        int count=0;
+        for(int i=0;i<n;i++){
+            int sum=0;
+            for(int j=i;j<n;j++){
+                sum+=nums[j];
+                if(sum==k){
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+  // OPTIMISED    O(N * log n)       SC:- O( LOG N)
+
+   int subarraySum(vector<int>& nums, int k) {
+        map<int,int>mp;
+        mp[0]=1;
+        int n=nums.size();
+        int preSum=0;int count=0;
+        for(int i=0;i<n;i++){
+           preSum+=nums[i];
+           int remove=preSum-k;
+           count+=mp[remove];
+           mp[preSum]++;
+        }
+        return count;
+    }
+   
