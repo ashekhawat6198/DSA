@@ -1954,42 +1954,90 @@ int findCheapestPrice(int n, vector<vector<int>> &flights, int src, int dst, int
 }
 
 // 37. Number of Ways to Arrive at Destination
-int countPaths(int n, vector<vector<int>>& roads) {
-       vector<pair< int,long long int>>adj[n];
-       for(auto it:roads){
-          adj[it[0]].push_back({it[1],it[2]});
-          adj[it[1]].push_back({it[0],it[2]});
-       } 
+int countPaths(int n, vector<vector<int>> &roads)
+{
+    vector<pair<int, long long int>> adj[n];
+    for (auto it : roads)
+    {
+        adj[it[0]].push_back({it[1], it[2]});
+        adj[it[1]].push_back({it[0], it[2]});
+    }
 
-        priority_queue<pair<long long int,long long int>,vector<pair<long long int,long long int>>,greater<pair<long long int,long long int>>>pq;
-        vector<long long int>dist(n,LONG_MAX);
-        vector<int>ways(n,0);
-        dist[0]=0;
-        ways[0]=1;
-        int mod=(1e9+7);
-        pq.push({0,0});   // dist,node
-        while(!pq.empty()){
-            long long  int dis=pq.top().first;
-             int node=pq.top().second;
-            pq.pop();
-            for(auto it:adj[node]){
-                  int adjNode=it.first;
-                    long long int edW=it.second;
-                 // this is the first time i am arriving
-                 // with this short distance
-                 if(dis+edW<dist[adjNode]){
-                    dist[adjNode]=dis+edW;
-                    pq.push({dis+edW,adjNode});
-                    ways[adjNode]=ways[node];
-                 }
-                 else if(dis+edW==dist[adjNode]){
-                    ways[adjNode]=(ways[adjNode]+ways[node])%mod;
-                 }
-
+    priority_queue<pair<long long int, long long int>, vector<pair<long long int, long long int>>, greater<pair<long long int, long long int>>> pq;
+    vector<long long int> dist(n, LONG_MAX);
+    vector<int> ways(n, 0);
+    dist[0] = 0;
+    ways[0] = 1;
+    int mod = (1e9 + 7);
+    pq.push({0, 0}); // dist,node
+    while (!pq.empty())
+    {
+        long long int dis = pq.top().first;
+        int node = pq.top().second;
+        pq.pop();
+        for (auto it : adj[node])
+        {
+            int adjNode = it.first;
+            long long int edW = it.second;
+            // this is the first time i am arriving
+            // with this short distance
+            if (dis + edW < dist[adjNode])
+            {
+                dist[adjNode] = dis + edW;
+                pq.push({dis + edW, adjNode});
+                ways[adjNode] = ways[node];
+            }
+            else if (dis + edW == dist[adjNode])
+            {
+                ways[adjNode] = (ways[adjNode] + ways[node]) % mod;
             }
         }
-
-        return ways[n-1]%mod;
-
-        
     }
+
+    return ways[n - 1] % mod;
+}
+
+// 38. BELLMEN FORD ALGO (ONLY FOR DIRECTED)
+
+/* YOU HAVE TO DO N-1 RELAXATION
+
+  RELAXATION (on every edge):-
+  if(dist[u]+wt<dist[v]){
+  dist[v]=dist[u]+wt;
+
+  }
+
+*/
+
+vector<int> bellman_ford(int V, vector<vector<int>> &edges, int S)
+{
+    vector<int> dist(V, 1e8);
+    dist[S] = 0;
+    for (int i = 0; i < V - 1; i++)
+    {
+        for (auto it : edges)
+        {
+            int u = it[0];
+            int v = it[1];
+            int wt = it[2];
+            if (dist[u] != 1e8 && dist[u] + wt < dist[v])
+            {
+                dist[v] = dist[u] + wt;
+            }
+        }
+    }
+
+    // n th relaxation to check negative cycle
+    for (auto it : edges)
+    {
+        int u = it[0];
+        int v = it[1];
+        int wt = it[2];
+        if (dist[u] != 1e8 && dist[u] + wt < dist[v])
+        {
+            return {-1};
+        }
+    }
+
+    return dist;
+}
