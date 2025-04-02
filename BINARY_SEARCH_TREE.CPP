@@ -731,7 +731,7 @@ class Solution{
         
         if(currNode.isBST==true){
             ans=max(ans,currNode.size);
-        }
+        } 
         return currNode;
         
     }

@@ -1,4 +1,8 @@
 
+// STEP 1 : CREATE DP
+// STEP 2 : JO RETURN KR RHE HAI USKO VECTOR MAI STORE KRO 
+// STEP 3 :  BASE CASE KEEE NEECHE CHECK KRO DP IS NOT EQUAL TO -1
+
 
 // 1. MAXIMUM SUM OF NON ADJACENT ELEMENTS
 
@@ -154,7 +158,7 @@ int coinChange(vector<int> &coins, int amount)
 
 int solve(vector<int> &coins, int n)
 {
-    vector<int> dp(n + 1, INT_MAX);
+    vector<int> dp(n + 1, INT_MAX);   // KUKI MINIMUM MAI ANSWER CHIYE
     dp[0] = 0;
 
     for (int target = 1; target <= n; target++)
@@ -705,3 +709,143 @@ int solve(int start,int end){
     }
 
 // BOTTOM-UP APPROACH
+
+
+
+
+
+// 10 . FIBONACCI SRIES
+
+// A. RECURSION 
+class Solution {
+public:
+    int fib(int n) {
+        if(n==0 ){
+            return 0;
+        }
+        if(n==1 ){
+            return 1;
+        }
+
+        return fib(n-1)+fib(n-2);
+    }
+};
+
+
+// B. RECUSION + MEMOIZATION     TC:- O(N)  | SC:- O(N) + O(N)       RECURSIVE STACK + ARRAY
+
+int solve(int n,vector<int>&dp){
+    if(n<=1){
+        return n;
+    }
+
+    if(dp[n]!=-1){
+        return dp[n];
+    }
+
+    return dp[n]=solve(n-1,dp) + solve(n-2,dp);
+   }
+
+    int fib(int n) {
+     vector<int>dp(n+1,-1);
+     return solve(n,dp);
+    }
+
+
+// c. BOTTOM UP APPROACH               TC:- O(N)  | SC:- O(N) array
+
+ int solve(int n,vector<int>&dp){
+    dp[0]=0;
+    dp[1]=1;
+    for(int i=2;i<=n;i++){
+        dp[i]=dp[i-1]+dp[i-2];
+    }
+    return dp[n];
+
+   
+   }
+
+    int fib(int n) {
+        if(n==0) return 0;
+     vector<int>dp(n+1,-1);
+     return solve(n,dp);
+    }
+
+
+// D. BOTTOM UP APPROACH WITH SPACE OPTIMISATION             TC:- O(N)  | SC:- O(1) 
+
+int solve(int n){
+    int prev1=1;
+    int prev2=0;
+    int curr;
+    for(int i=2;i<=n;i++){
+         curr=prev1+prev2;
+         prev2=prev1;
+         prev1=curr;
+    }
+    return curr;
+
+   
+   }
+
+    int fib(int n) {
+      if(n<=1) return n;
+    
+     return solve(n);
+    }
+
+
+
+// 11. CLIMBING STAIRS  ( check cost wala also leetcode 746)
+
+// A. RECURSION      TC:- O(N) SC:- 
+class Solution {
+public:
+
+    int solve(int n,int i){
+        if(i==n) return 1;
+        if(i>n) return 0;
+
+        return solve(n,i+1) + solve(n,i+2);  
+    }
+
+    int climbStairs(int n) {
+       return solve(n,0);
+    }
+};
+
+// B. RECURSION  + SPACE OPTIMIZATION      
+
+int solve(int n,int i,vector<int>&dp){
+        if(i==n) return 1;
+        if(i>n) return 0;
+         if(dp[i]!=-1){
+            return dp[i];
+         }
+        return dp[i]=solve(n,i+1,dp) + solve(n,i+2,dp);  
+    }
+
+    int climbStairs(int n) {
+        vector<int>dp(n+1,-1);
+       return solve(n,0,dp);
+    }
+
+// C. BOTTOM UP APPROACH OR TABULATION
+int solve(vector<int>& cost,int n,vector<int>&dp){
+       dp[0]=cost[0];
+       dp[1]=cost[1];
+          
+          for(int i=2;i<=n;i++){
+              dp[i]=cost[i]+min(dp[i-1],dp[i-2]);
+          }
+          return dp[n];
+        
+      }
+
+    int minCostClimbingStairs(vector<int>& cost) {
+        int n=cost.size();
+        vector<int>dp(n+1,-1);
+        int ans=min(solve(cost,n-1,dp) , solve(cost,n-2,dp) );
+        return ans;
+    }
+

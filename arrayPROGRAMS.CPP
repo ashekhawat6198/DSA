@@ -100,12 +100,30 @@ void swapArray(int array[], int n)
 
 int uniqueDigit(int array[], int size)
 {
-    int ans = 0;
+    int ans = 0;-
     for (int i = 0; i < size; i++)
     {
         ans = ans ^ array[i]; // doing XOR to eliminate duplicate
     }
     return ans;
+}
+
+// OR
+
+int findUnique(int *arr, int size)
+{
+   std::map<int,int>mp;
+   for(int i=0;i<size;i++){
+       mp[arr[i]]++;
+   }
+
+   for(auto x:mp){
+       if(x.second==1){
+           return x.first;
+       }
+   }
+
+   return -1;
 }
 
 // 7. DUPLICATES IN ARRAY  ( https://www.codingninjas.com/codestudio/problems/duplicate-in-array_893397?source=youtube&campaign=love_babbar_codestudio1&utm_source=youtube&utm_medium=affiliate&utm_campaign=love_babbar_codestudio1 )
@@ -145,6 +163,7 @@ vector<int> findDuplicates(vector<int> &nums)
 vector<int> findDuplicates(vector<int> &nums)
 {
     vector<int> ans;
+    
     for (int i = 0; i < nums.size(); i++)
     {
         if (nums[abs(nums[i]) - 1] > 0)
@@ -1587,7 +1606,9 @@ vector<int> findTwoElement(vector<int> arr, int n)
 
     vector<int> result(2);
     int repeating = -1;
-    int missing = -1;
+    int 
+    
+     = -1;
 
     for (int i = 0; i < n; ++i)
     {
@@ -1731,3 +1752,70 @@ vector<int> majorityElement(vector<int> &nums)
         return count;
     }
    
+// 49.  3Sum Closest
+ int threeSumClosest(vector<int>& nums, int target) {
+        sort(nums.begin(),nums.end());
+        int closeSum=INT_MAX/2;
+       for(int i=0;i<nums.size()-2;i++){
+           
+           int j=i+1;
+           int k=nums.size()-1;
+         while(j<k){
+           int sum=nums[i]+nums[j]+nums[k];
+           if(abs(sum-target) < abs(closeSum-target)){
+            closeSum=sum;
+           }
+           if(sum<target){
+              j++;
+           }
+           else if(sum>target){
+              k--;
+           }
+           else{
+                    return sum;
+           }
+         }
+       } 
+       return closeSum;
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

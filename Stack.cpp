@@ -536,12 +536,12 @@ vector<int> prevSmallerElement(vector<int> &arr, int n)
 
 
     int *arr;
-    int *top;
-    int *next;
+    int *top;     // ndex of top element of the stack
+    int *next;   // 2 things : (i) represent next element of the top and (ii) represent next free space (when array is empty)
 
     int n,s;
 
-    int freespot;
+    int freespot;     // represent or tells us on which index of next we have to go
 
 public:
     // Initialize your data structure.
@@ -590,7 +590,7 @@ public:
         //insert element into array
         arr[index]=x;
 
-        //update index
+        //update index as in array there is element and m-1 is as array is zero based indexing top[m](puarana stack)
         next[index]=top[m-1];
 
         //update top
@@ -647,17 +647,293 @@ int findMaxLen(string s) {
        }
        return max(len,maxi);
     }
-int main()
-{
 
-    stack st(5);
-    st.push(10);
-    st.push(20);
-    st.push(30);
-    cout<<st.peek()<<endl;
-    st.pop();
-    cout<<st.peek()<<endl;
-    st.pop();
-    st.pop();
-     cout<<st.peek()<<endl;
+
+// 16. INFIX TO POSTFIX       TC : O(N)+O(N)    SC : O(N)+O(N)   
+
+ int priority(char ch){
+      if(ch=='^'){
+          return 3;
+      }    
+      else if(ch=='*' || ch=='/'){
+          return 2;
+      }
+      else if(ch=='+' || ch=='-'){
+          return 1;
+      }
+      else{
+          return -1;
+      }
+    }
+    
+    
+    string infixToPostfix(string s) {
+      string ans="";
+      stack<char>st;
+      for(int i=0;i<s.size();i++){
+          char ch=s[i];
+          if( (ch>='A' && ch<='Z' ) || (ch>='a' && ch<='z') || ch>='0' && ch<='9'){
+              ans=ans+ch;
+          } 
+          else if(ch=='('){
+              st.push(ch);
+          }
+          else if(ch==')'){
+              while(!st.empty() && st.top()!='('){
+                  ans=ans+st.top();
+                  st.pop();
+              }
+              st.pop();
+          }
+          else{
+              while(!st.empty() && priority(ch)<=priority(st.top())){
+                  ans=ans+st.top();
+                  st.pop();
+              }
+              st.push(ch);
+          }
+      }
+      
+      while(!st.empty()){
+          ans+=st.top();
+          st.pop();
+      }
+      
+      return ans;
+    }
+
+//17.  INFIX TO PREFIX            TC : O(N/2)+O(N/2)+O(2N) => O(3N)  SC:O(N)
+    SC : O(N)+O(N) 
+/*
+   1. Reverse 
+   2. infix to postfix
+   3. revrse ans
+*/
+
+string reverse(string s){
+    int i=0;
+    int j=s.size()-1;
+    while(i<=j){
+        if(s[i]=='(' ){
+            s[i]=')';
+        }
+        else if(s[j]=='(' ){
+            s[j]=')';
+        }
+        else if(s[i]==')'){
+            s[i]='(';
+        }
+        else if(s[j]==')'){
+            s[j]='(';
+        }
+        
+        swap(s[i],s[j]);
+        i++;
+        j--;
+    }
+    return s;
 }
+
+ int priority(char ch){
+      if(ch=='^'){
+          return 3;
+      }    
+      else if(ch=='*' || ch=='/'){
+          return 2;
+      }
+      else if(ch=='+' || ch=='-'){
+          return 1;
+      }
+      else{
+          return -1;
+      }
+    }
+
+string solve(string s){
+    s=reverse(s);
+    string ans="";
+    stack<char>st;
+    for(int i=0;i<s.size();i++){
+        char ch=s[i];
+        if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z') || (ch>='0' && ch<='9') ){
+            ans=ans+ch;
+        }
+        else if(ch=='('){
+            st.push(ch);
+        }
+        else if(ch==')'){
+            while(!st.empty() && st.top()!='('){
+                ans+=st.top();
+                st.pop();
+            }
+            st.pop();
+        }
+        else{
+            if(ch=='^'){
+                while(!st.empty() && priority(ch)<=priority(st.top())){
+                    ans+=st.top();
+                    st.pop();
+                }
+                st.push(ch);
+            }
+            else{
+                 while(!st.empty() && priority(ch)<priority(st.top())){
+                    ans+=st.top();
+                    st.pop();
+                }
+                st.push(ch);
+            }
+        }
+        
+      
+    }
+      while(!st.empty()){
+            ans+=st.top();
+            st.pop();
+        }
+        
+        ans=reverse(ans);
+        return ans;
+}
+
+
+int main() {
+    string s="(A+B)*C-D+F";
+    string ans=solve(s);
+    cout<<ans;
+}
+
+// 18 POSTFIX TO INFIX
+
+string postToInfix(string s) {
+        stack<string>st;
+        for(int i=0;i<s.size();i++){
+           char ch=s[i];
+           if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z') || (ch>='0' && ch<='9')){
+               st.push(string(1,ch));
+           }
+           else{
+               
+             
+                string s2=st.top();
+               st.pop();
+               string s1=st.top();
+               st.pop();
+               
+               st.push('('+ s1 + ch + s2 +')');    
+               
+               
+           }
+        }
+        
+        return st.top();
+
+    }
+
+// 19. IMPLEMENT MIN STACK  
+ 
+ // BRUTE FORCE   TC:-O(1)  SC:-O(2*N)
+
+class MinStack {                
+  stack < pair < int, int >> st;
+
+  public:
+    void push(int x) {
+      int min;
+      if (st.empty()) {
+        min = x;
+      } else {
+        min = std::min(st.top().second, x);
+      }
+      st.push({x,min});
+    }
+}
+
+
+// OPTIMIZED APPROACH
+
+ stack<long long>st;
+    long long mini;
+    MinStack() {
+        mini=INT_MAX;
+    }
+    
+    void push(int val) {
+        if(st.empty()){
+            mini=val;
+            st.push(val);
+        }
+        else{
+            if(val>mini){
+                st.push(val);
+            }
+            else{
+                st.push(2LL*val-mini); // Use 2LL to ensure the calculation is done in long long
+                mini=val;
+            }
+        }
+    }
+    
+    void pop() {
+        if(st.empty()){
+            return; 
+        }
+        long long ans=st.top();
+        st.pop();
+        
+           if(ans<mini)
+                mini=2*mini-ans;
+           
+        
+    }
+    
+    int top() {
+        if(st.empty()) return -1;
+        long long ans=st.top();
+        if(mini<ans){
+            return ans;
+        }
+        else return mini;
+
+    }
+    
+    int getMin() {
+        if(st.empty()) return -1;
+        else return mini;
+    }
+
+
+// 20. REMOVE K DIGITS                  TC: O(3N) + O(K)    SC:- O(N) + O(N) 
+
+ string removeKdigits(string num, int k) {
+        stack<char>st;
+        for(int i=0;i<num.size();i++){
+            while(!st.empty() && k>0 && st.top()-'0' > num[i]-'0'){
+                st.pop();
+                k--;
+            }
+            st.push(num[i]);
+        }
+
+        while(k>0){    // k is still remaining 
+            
+            st.pop();
+            k--;
+        }
+
+        if(st.empty()) return "0";
+
+        string res="";
+        while(!st.empty()){
+            res+=st.top();
+            st.pop();
+        }
+
+        while(res.size()!=0 && res.back()=='0'){           // trim initial zeroes ( 00123 )
+            res.pop_back();
+        }
+        reverse(res.begin(),res.end());
+      if(res.empty()) return "0";
+      return res;
+
+    }

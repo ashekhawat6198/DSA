@@ -973,7 +973,8 @@ vector<int> dijkstra(vector<vector<int>> &vec, int vertices, int edges, int sour
     return dis;
 }
 
-// 20. KRUSKAL'S ALGORTIHM
+// 20. KRUSKAL'S ALGORTIHM (using disjoint set find mst)
+
 bool cmp(vector<int> &a, vector<int> &b)
 {
     return a[2] < b[2];
@@ -1040,149 +1041,148 @@ int minimumSpanningTree(vector<vector<int>> &edges, int n)
     return minWeight;
 }
 
-// 21. BRIDGES IN GRAPH
-void dfs(int node, int parent, vector<int> &dis, vector<int> &low, int timer,
-         unordered_map<int, bool> &vis, vector<vector<int>> &result, unordered_map<int, list<int>> &adj)
+// OR  (MST)
+
+int spanningTree(int V, vector<vector<int>> adj[])
 {
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
-    vis[node] = true;
-    dis[node] = low[node] = timer++;
+    vector<int> vis(V, 0);
 
-    for (auto neighbour : adj[node])
+    // weight,node
+    int sum = 0;
+    pq.push({0, 0});
+    while (!pq.empty())
     {
-        if (neighbour == parent)
+        auto it = pq.top();
+        pq.pop();
+        int node = it.second;
+        int wt = it.first;
+
+        if (vis[node] == 1)
             continue;
-        if (!vis[neighbour])
+        vis[node] = 1;
+        sum += wt;
+        for (auto it : adj[node])
         {
-            dfs(neighbour, node, dis, low, timer, vis, result, adj);
-            low[node] = min(low[node], low[neighbour]);
-            // check edge is bridge
-            if (low[neighbour] > dis[node])
+            int adjNode = it[0];
+            int edW = it[1];
+            if (!vis[adjNode])
             {
-                vector<int> ans;
-                ans.push_back(node);
-                ans.push_back(neighbour);
-                result.push_back(ans);
+                pq.push({edW, adjNode});
             }
         }
+    }
 
+    return sum;
+}
+
+// 21. BRIDGES IN GRAPH
+
+/*
+tin(time of insertion):-track when you are reaching a node or at which step you are reaching a node
+low:-lowest time insertion of all adjacent nodes apart from parent
+*/
+
+void dfs(int node, int parent, vector<int> &vis, vector<int> adj[], int tin[], int low[],
+         vector<vector<int>> &bridges, int timer)
+{
+    vis[node] = 1;
+    tin[node] = low[node] = timer++;
+    for (auto it : adj[node])
+    {
+        if (it == parent)
+            continue;
+        if (vis[it] == 0)
+        {
+            dfs(it, node, vis, adj, tin, low, bridges, timer);
+            low[node] = min(low[node], low[it]);
+            // node --- it
+            if (low[it] > tin[node])
+            {
+                bridges.push_back({it, node});
+            }
+        }
         else
         {
-            // node already visited and not parent
-            // back edge
-            low[node] = min(low[node], dis[neighbour]);
+            // bridge is not possible as it is visited
+            low[node] = min(low[node], low[it]);
         }
     }
 }
 
-vector<vector<int>> findBridges(vector<vector<int>> &edges, int v, int e)
+vector<vector<int>> criticalConnections(int n, vector<vector<int>> &connections)
 {
-    unordered_map<int, list<int>> adj;
-    for (int i = 0; i < e; i++)
+    vector<int> adj[n];
+    for (auto it : connections)
     {
-        int u = edges[i][0];
-        int v = edges[i][1];
-
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+        adj[it[0]].push_back(it[1]);
+        adj[it[1]].push_back(it[0]);
     }
 
-    vector<int> dis(v);
-    vector<int> low(v);
+    vector<int> vis(n, 0);
+    int tin[n];
+    int low[n];
     int timer = 0;
-    int parent = -1;
-    unordered_map<int, bool> vis;
-
-    for (int i = 0; i < v; i++)
-    {
-        dis[i] = -1;
-        low[i] = -1;
-    }
-
-    vector<vector<int>> result;
-
-    for (int i = 0; i < v; i++)
-    {
-        if (!vis[i])
-        {
-            dfs(i, parent, dis, low, timer, vis, result, adj);
-        }
-    }
-
-    return result;
+    vector<vector<int>> bridges;
+    dfs(0, -1, vis, adj, tin, low, bridges, timer);
+    return bridges;
 }
 
 // 22. ARTICUALTION POINT
 
-void dfs(int node, int parent, vector<int> &dis, vector<int> &low, int timer,
-         unordered_map<int, bool> &vis, vector<vector<int>> &result, unordered_map<int, list<int>> &adj)
-{
 
-    vis[node] = true;
-    dis[node] = low[node] = timer++;
-    int child = 0;
-    for (auto neighbour : adj[node])
-    {
-        if (neighbour == parent)
-            continue;
-        if (!vis[neighbour])
-        {
-            dfs(neighbour, node, dis, low, timer, vis, result, adj);
-            low[node] = min(low[node], low[neighbour]);
-            // check AP or not
-            if (low[neighbour] >= dis[node] && parent != -1)
-            {
-                ap[node] = true;
+/*
+tin(time of insertion):-track when you are reaching a node or at which step you are reaching a node
+low:-lowest time insertion of all adjacent nodes apart from parent && visited nodes
+*/
+
+ void dfs(int node,int parent,vector<int>&vis,int tin[],int low[],vector<int>&mark,
+  vector<int>adj[],int timer){
+      vis[node]=1;
+      tin[node]=low[node]=timer++;
+      int child=0;
+      for(auto it:adj[node]){
+          if(it==parent) continue;
+          if(!vis[it]){
+              dfs(it,node,vis,tin,low,mark,adj,timer);
+              low[node]=min(low[node],low[it]);
+              if(low[it]>=tin[node] && parent!=-1){        //  parent!=-1 :- as it still stays the 1 component
+                  mark[node]=1;
+                  
+              }
+              child++;
+          }
+          else{
+              low[node]=min(low[node],tin[it]);   // we are taking tin instead of low as the node might be removed
+          }
+      }
+      if(child>1 && parent==-1){   // is starting node has more than 1 child
+         mark[node]=1; 
+      }
+  }
+  
+    vector<int> articulationPoints(int V, vector<int>adj[]) {
+        vector<int>vis(V,0);
+        int tin[V];
+        int low[V];
+        vector<int>mark(V,0);
+        int timer=0;
+        for(int i=0;i<V;i++){
+            if(!vis[i]){
+                dfs(i,-1,vis,tin,low,mark,adj,timer);
             }
-            child++;
+        } 
+        
+        vector<int>ans;
+        for(int i=0;i<V;i++){
+            if(mark[i]==1){
+                ans.push_back(i);
+            }  
         }
-
-        else
-        {
-            // node already visited and not parent
-            // back edge
-            low[node] = min(low[node], dis[neighbour]);
-        }
+        if(ans.size()==0) return {-1};
+        return ans;
     }
-}
-
-vector<vector<int>> findBridges(vector<vector<int>> &edges, int v, int e)
-{
-    unordered_map<int, list<int>> adj;
-    for (int i = 0; i < e; i++)
-    {
-        int u = edges[i][0];
-        int v = edges[i][1];
-
-        adj[u].push_back(v);
-        adj[v].push_back(u);
-    }
-
-    vector<int> dis(v);
-    vector<int> low(v);
-    int timer = 0;
-    int parent = -1;
-    unordered_map<int, bool> vis;
-
-    for (int i = 0; i < v; i++)
-    {
-        dis[i] = -1;
-        low[i] = -1;
-    }
-
-    vector<vector<int>> result;
-
-    for (int i = 0; i < v; i++)
-    {
-        if (!vis[i])
-        {
-            dfs(i, parent, dis, low, timer, vis, result, adj);
-        }
-    }
-
-    return result;
-}
-
 // 23.Count Strongly Connected Components (Kosaraju’s Algorithm)
 
 void dfs(int node, stack<int> &st, unordered_map<int, bool> &visited, unordered_map<int, list<int>> &adj)
@@ -2041,3 +2041,4 @@ vector<int> bellman_ford(int V, vector<vector<int>> &edges, int S)
 
     return dist;
 }
+

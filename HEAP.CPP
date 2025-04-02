@@ -339,7 +339,15 @@ long long minCost(long long arr[], long long n)
   return cost;
 }
 
-// 10. CONVERT BST TO MIN HEAP                  1. NODE<LEFT && NODE<RIGHT     2.  LEFT<RIGHT      RESULT=NODE<LEFT<RIGHT
+
+// 10. CONVERT BST TO MIN HEAP                  
+/*
+  complete binary tree hai means structure same rahega
+  2 conditions: (i) min heap means NODE<LEFT && NODE<RIGHT  
+                (ii) left ke saare elements right se chotte    LEFT<RIGHT
+            out come of both condition [ NODE < LEFT < RIGHT ]
+  
+*/
 void inorder(BinaryTreeNode *root, vector<int> &v)
 {
   if (root == NULL)

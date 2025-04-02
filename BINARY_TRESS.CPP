@@ -1298,7 +1298,7 @@ string solve(TreeNode *root, vector<TreeNode *> &ans, unordered_map<string, int>
 
     string s = "";
     s = to_string(root->val);
-    s = s + "," + solve(root->left, ans, mp);
+    s = s + "," + solve(root->left, ans, mp);  // commas:  4->1->3  && 4->13
     s = s + "," + solve(root->right, ans, mp);
     if (mp[s] == 1)
         ans.push_back(root);

@@ -324,6 +324,28 @@ int numberOfSubarrays(vector<int> &nums, int goal)
     }
 
 
+  // or
+
+   int numberOfSubstrings(string s) {
+      int count=0;
+      int l=0;
+      int r=0;
+      int map[3]={-1,-1,-1};
+      while(r<s.size()){
+           map[s[r]-'a']=r;
+          
+           if(map[0]!=-1 && map[1]!=-1 && map[2]!=-1){
+            count+=(1+min(map[0],min(map[1],map[2])));
+            l++;
+           }
+           r++;
+        
+      }  
+
+      return count;
+    }
+
+
 // 7.  Maximum Points You Can Obtain from Cards    TC:-O(2*K) &&  SC:-O(1)
 
    int maxScore(vector<int>& nums, int k) {
@@ -496,15 +518,15 @@ int kDistinctChars(int k, string &str)
             int hash[256]={0};
            int count=0;
            for(int j=0;j<m;j++){
-            hash[t[j]]++;
+            hash[t[j]]++;          // first we put all memebers of string 2 in array
            }
            for(int j=i;j<n;j++){
-            if(hash[s[j]]>0) count++;
+            if(hash[s[j]]>0) count++;  // if it is pre exist or it is in string 2 and incremenet count to match the size of string 2
             hash[s[j]]--;
-            if(count==m){
+            if(count==m){     // if count is equal to size of string 2
                 if((j-i+1)<minLength){
                     minLength=j-i+1;
-                   startIndex=i;
+                   startIndex=i;    
                 }
                  
                  break;
@@ -519,36 +541,35 @@ int kDistinctChars(int k, string &str)
     // OPTIMAL APPROACH        TC:-  O(2N)+O(M)    SC:-O(256)
 
     string minWindow(string s, string t) {
-        int minLength=INT_MAX;
         int n=s.size();
         int m=t.size();
-        int startIndex=-1;
-        int hash[256]={0};
         int l=0;
         int r=0;
+        int map[256]={0};
         int count=0;
-       for(int i=0;i<m;i++){
-            hash[t[i]]++;
-       }
+        int minLength=INT_MAX;
+        int startIndex=-1;
+        for(int i=0;i<m;i++){
+            map[t[i]]++;
+        }
 
-       while(r<n){
-           if(hash[s[r]]>0) count++;
-           hash[s[r]]--;
-           while(count==m){
-                if(r-l+1<minLength){
-                    minLength=r-l+1;
-                     startIndex=l;
-                }
-               
-                
-              hash[s[l]]++;
-              if(hash[s[l]]>0) count--;
-              l++;
-           }
-           r++;
-       }
-          
-        return startIndex==-1 ? "" : s.substr(startIndex,minLength);
+        while(r<n){
+          if(map[s[r]]>0) count++;
+          map[s[r]]--;
+          while(count==m){
+            if(r-l+1<minLength){
+                minLength=r-l+1;
+                startIndex=l;
+
+            }
+
+            map[s[l]]++;    // count badha rhe hai agar 0 se bada ho gya toh ek element kam ho gya toh count ki vallue kam ho gyi toh ham aage traverse krenge ki abhi saare element ni hai 
+            if(map[s[l]]>0) count--;
+            l++;
+          }
+          r++;
+        }
+        return startIndex==-1 ? "" : s.substr(startIndex,minLength); 
     }
 
 

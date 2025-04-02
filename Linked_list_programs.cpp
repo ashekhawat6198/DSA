@@ -1266,6 +1266,3 @@ long long  multiplyTwoLists (Node* l1, Node* l2)
     }
 
 
-int main()
-{
-}

@@ -328,7 +328,7 @@ int count(int arr[], int n, int x)
     return ans;
 }
 
-// 7. SEARCH IN ROTATED AND SORTED ARRAY
+// 7. SEARCH IN ROTATED AND SORTED ARRAY        rotated sorted array mai ek part hamesha sorted hota hai toh ham binary search    sorted part mai lagate hai kuki vo uski property hai 
 
 int search(vector<int> &nums, int target)
 { // O ( LOG N )
@@ -384,7 +384,7 @@ bool search(vector<int> &nums, int target)
         if (nums[mid] == target)
             return true;
 
-        if (nums[low] == nums[mid] && nums[mid] == nums[high])
+        if (nums[low] == nums[mid] && nums[mid] == nums[high])   // you cant identify which part is sorted if you dont use this part
         { // [3 1 2 3 3 3 3] for this type of case
             low++;
             high--;
@@ -421,7 +421,15 @@ bool search(vector<int> &nums, int target)
     return false;
 }
 
-// 9. MINIMUM IN ROTATED SORTED ARRAY
+// 9. MINIMUM IN ROTATED SORTED ARRAY 
+
+   /* sorted half may or may not have the answer
+    */
+/*
+  1) identify the sorted half
+  2)  take min from sorted half and eleminate as i have picked the mini, now move to next part
+  3) take the min and now eleminate again
+*/
 
 int findMin(vector<int> &nums)
 { // O ( log n)
@@ -526,6 +534,9 @@ int singleNonDuplicate(vector<int> &nums)
         int mid = low + (high - low) / 2;
         if (nums[mid] != nums[mid - 1] && nums[mid] != nums[mid + 1])
             return nums[mid];
+
+           // elemmination that part where element is not there    [1,1,2,2,3,3,4,5,5,6,6,7,7]
+                                                               //  [e,o,e,o,e,o,e,o,e,o,e,o,e]
 
         if (mid % 2 == 1 && nums[mid] == nums[mid - 1] || mid % 2 == 0 && nums[mid] == nums[mid + 1])
         { // left part so element is in right part
@@ -965,7 +976,7 @@ int shipWithinDays(vector<int> &weights, int days)
     return ans;
 }
 
-// 18. Kth Missing Positive Number
+// 18. Kth Missing Positive Number            **
 
 // BRUTE FORCE   O(N)
 int findKthPositive(vector<int> &arr, int k)
@@ -1017,14 +1028,14 @@ bool canWePlace(vector<int> &arr, int cows, int dist)
     int last = arr[0];
     for (int i = 1; i < arr.size(); i++)
     {
-        if (arr[i] - last >= dist)
+        if (arr[i] - last >= dist)   // as we have to find maximum of minimum
         {
             cntCows += 1;
             last = arr[i];
         }
     }
 
-    if (cntCows >= cows)
+    if (cntCows >= cows)   // if cows is greater than or equal to k
         return true;
     return false;
 }
@@ -1053,6 +1064,7 @@ int maxDistance(vector<int> &stalls, int m)
 
 int maxDistance(vector<int> &stalls, int m)
 {
+    // we sort because minimum will happen between consecutive place
     sort(stalls.begin(), stalls.end());
     int maxi = *max_element(stalls.begin(), stalls.end());
     int mini = *min_element(stalls.begin(), stalls.end());
@@ -1161,11 +1173,11 @@ int findPages(vector<int> &arr, int n, int m)
         if (cntStudents > m)
         {
 
-            low = mid + 1;
+            low = mid + 1;     // student jada hai toh no of pages badhaao bache kam honge
         }
         else
         {
-            high = mid - 1;
+            high = mid - 1;     // student kam hai toh no of pages kam karo bache badhenge
         }
     }
 
@@ -1398,10 +1410,10 @@ int findPages(vector<int> &arr, int n, int m)
         else high=mid-1;
        }
 
-       return false;
+       return false;-----------
     }
 
-    // 27. FIND PEAK ELEMENT IN 2-D MATRIX      O(N * log m)
+    // 27. FIND PEAK ELEMENT IN 2-D MATRIX      O(N * log m)       ( do it again )
 
      int solve(vector<vector<int>>& mat,int r,int c,int col){
         int index=-1;
@@ -1484,7 +1496,7 @@ int findPages(vector<int> &arr, int n, int m)
         
     }
 
-    // 29. Kth element of two sorted arrays
+
     
 
 
